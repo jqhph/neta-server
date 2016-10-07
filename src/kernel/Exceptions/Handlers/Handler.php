@@ -1,5 +1,5 @@
 <?php
-namespace NetaServer\Exceptions;
+namespace NetaServer\Exceptions\Handlers;
 
 use \NetaServer\Injection\Container;
 
