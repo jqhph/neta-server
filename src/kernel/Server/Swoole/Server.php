@@ -49,12 +49,12 @@ abstract class Server
 	 * */
 	protected $publicService = [
 		'app.server', # $this
-		'pipeline',
-		'mapperManager',
+		'pipeline.manager',
+		'mapper.manager',
 		'exception.handler',
-		'modelFactory',
+		'model.factory',
 		'debug',
-		'controllerManager',
+		'controller.manager',
 		'server.timer',
 		'application', # \NetaServer\Application
 		'swoole.server', # \Swoole\Server
@@ -170,7 +170,7 @@ abstract class Server
 				# 进程命名
 				swoole_set_process_name($processName);
 
-				app('fileManager')->appendContents(
+				app('file.manager')->appendContents(
 						C('server.tmplog', $this->defaultTmplogPath),
 						$processName . "\n"
 				);
@@ -195,7 +195,7 @@ abstract class Server
 			# 进程命名
 			swoole_set_process_name($processName);
 			# 临时文件
-			app('fileManager')->appendContents(
+			app('file.manager')->appendContents(
 					C('server.tmplog', $this->defaultTmplogPath),
 					$processName . "\n"
 			);
@@ -277,7 +277,7 @@ abstract class Server
 
 			info($processName);
 
-			app('fileManager')->appendContents(
+			app('file.manager')->appendContents(
 				C('server.tmplog', $this->defaultTmplogPath),
 				$processName . "\n"
 			);

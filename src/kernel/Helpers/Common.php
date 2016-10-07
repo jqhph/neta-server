@@ -61,7 +61,7 @@ if (! function_exists('C')) {
 if (! function_exists('A')) {
 	function A($name, $method = null, array $params = [])
 	{
-		return $GLOBALS['__app__']->get('controllerManager')->get($name);
+		return $GLOBALS['__app__']->get('controller.manager')->get($name);
 	}
 }
 

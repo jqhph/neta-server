@@ -33,7 +33,7 @@ abstract class Server
         $this->container         = $container;
         $this->server            = $container->get('app.server');
         $this->serverType        = $serverType;
-        $this->controllerManager = $container->get('controllerManager');
+        $this->controllerManager = $container->get('controller.manager');
     }
 
     /**

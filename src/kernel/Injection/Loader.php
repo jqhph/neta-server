@@ -35,28 +35,24 @@ class Loader
 			],
 			'repository' => [
 				'class' => '\NetaServer\ORM\Repository',
-				'dependencies' => ['mapperManager', 'container']	
-			],
-			'entityManager' => [
-				'class' => '\NetaServer\ORM\EntityManager',
-				'dependencies' => 'container'
+				'dependencies' => ['mapper.manager', 'container']	
 			],
 			'router' => [
 				'class' => '\NetaServer\Router\Dispatch',
 				'dependencies' => 'container'	
 			],
-			'controllerManager' => [
+			'controller.manager' => [
 				'class' => '\NetaServer\Custom\ControllerManager',
 				'dependencies' => 'container'	
 			],
-			'fileManager' => [
+			'file.manager' => [
 				'class' => '\NetaServer\Utils\File\FileManager',
 				'dependencies' => 'config'
 			],
 			'http.client' => [
 				'class' => '\\NetaServer\\Http\\Client'
 			],
-			'pipeline' => [
+			'pipeline.manager' => [
 				'class' => '\NetaServer\Pipeline\PipelineManager',
 				'dependencies' => 'container'	
 			],
@@ -64,7 +60,7 @@ class Loader
 				'class' => '\NetaServer\Utils\PasswordHash',
 				'dependencies' => 'config'
 			],
-			'mapperManager' => [
+			'mapper.manager' => [
 				'class' => '\NetaServer\ORM\Mappers\MapperManager',
 				'dependencies' => 'container'
 			],
@@ -72,11 +68,11 @@ class Loader
 				'class' => '\NetaServer\Log\Logger',
 				'dependencies' => 'container'
 			],
-			'modelFactory' => [
+			'model.factory' => [
 				'class' => '\NetaServer\Custom\ModelFactory',
 				'dependencies' => 'container'
 			],
-			'cacheFactory' => [
+			'cache.factory' => [
 				'class' => '\NetaServer\Cache\CacheFactory',
 				'dependencies' => 'container'
 			],

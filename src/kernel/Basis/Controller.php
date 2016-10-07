@@ -39,7 +39,7 @@ class Controller
 	 * */
 	protected function model($name = null)
 	{
-		return $this->container->get('modelFactory')->get($name ?: $this->name);
+		return $this->container->get('model.factory')->get($name ?: $this->name);
 	}
 	
 	/**
@@ -164,7 +164,7 @@ class Controller
 	 * */
 	protected function cache() 
 	{
-		return $this->container->get('cacheFactory')->get();
+		return $this->container->get('cache.factory')->get();
 	}
 	
 	protected function getContainer() 

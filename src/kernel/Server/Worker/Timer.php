@@ -181,7 +181,7 @@ class Timer
     {
         list($class, $method) = $this->parseClassCallable($listener);
 
-        $controller = $this->container->get('controllerManager')->get($class);
+        $controller = $this->container->get('controller.manager')->get($class);
 
         if (! method_exists($controller, $method)) {
             $msg = "Cant't fount method: $method from $class!";
