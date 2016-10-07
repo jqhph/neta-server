@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Utils\File;
+namespace NetaServer\Utils\File;
 
-use \JQH\Config\Config;
-use JQH\Exceptions\Error;
+use \NetaServer\Config\Config;
+use NetaServer\Exceptions\Error;
 
 class FileManager 
 {

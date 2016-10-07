@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Utils\Debug;
+namespace NetaServer\Utils\Debug;
 
-use \JQH\Injection\Container;
-use \JQH\Support\Arr;
+use \NetaServer\Injection\Container;
+use \NetaServer\Support\Arr;
 
 class Statistical
 {

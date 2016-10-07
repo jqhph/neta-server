@@ -1,5 +1,5 @@
 <?php
-namespace JQH\ORM\Mappers\SQLJ;
+namespace NetaServer\ORM\Mappers\SQLJ;
 
 class Base
 {

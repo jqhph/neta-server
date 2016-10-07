@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Utils\Log\Handler;
+namespace NetaServer\Utils\Log\Handler;
 
 use \Monolog\Logger;
-use \JQH\Utils\Log\Formatter\DebugFormatter;
+use \NetaServer\Utils\Log\Formatter\DebugFormatter;
 
 class DebugHandler extends \Monolog\Handler\StreamHandler 
 {

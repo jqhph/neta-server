@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Contracts\Pipeline;
+namespace NetaServer\Contracts\Pipeline;
 
 use Closure;
 

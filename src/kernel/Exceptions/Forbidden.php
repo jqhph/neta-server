@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Exceptions;
+namespace NetaServer\Exceptions;
 
 class Forbidden extends Exception
 {

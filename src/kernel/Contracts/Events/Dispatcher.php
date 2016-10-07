@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Contracts\Events;
+namespace NetaServer\Contracts\Events;
 
 interface Dispatcher
 {

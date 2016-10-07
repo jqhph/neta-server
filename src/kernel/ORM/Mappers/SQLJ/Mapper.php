@@ -1,12 +1,12 @@
 <?php
-namespace JQH\ORM\Mappers\SQLJ;
+namespace NetaServer\ORM\Mappers\SQLJ;
 
 /**
  * 此sql构造器不会转译字段
  * 如:
  *   $this->select('myName'); ===> SELECT `myName` FROM ...
  * */
-class Mapper extends Base implements \JQH\Contracts\Mapper\MapperInterface
+class Mapper extends Base implements \NetaServer\Contracts\Mapper\MapperInterface
 {
 	protected $container;
 
@@ -36,7 +36,7 @@ class Mapper extends Base implements \JQH\Contracts\Mapper\MapperInterface
 
 	protected $limit;
 
-	public function __construct(\JQH\Injection\Container $container)
+	public function __construct(\NetaServer\Injection\Container $container)
 	{
 		$this->container = $container;
 	}
@@ -358,7 +358,7 @@ class Mapper extends Base implements \JQH\Contracts\Mapper\MapperInterface
 	public function readRow()
 	{
 		if (! $this->tableName) {
-			throw new \JQH\Exceptions\InternalServerError('Can not found table name.');
+			throw new \NetaServer\Exceptions\InternalServerError('Can not found table name.');
 		}
 
 		$table  = "`$this->tableName`";
@@ -399,7 +399,7 @@ class Mapper extends Base implements \JQH\Contracts\Mapper\MapperInterface
 	public function read()
 	{
 		if (! $this->tableName) {
-			throw new \JQH\Exceptions\InternalServerError('Can not found table name.');
+			throw new \NetaServer\Exceptions\InternalServerError('Can not found table name.');
 		}
 
 		$table  = "`$this->tableName`";

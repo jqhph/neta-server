@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Contracts\Entity;
+namespace NetaServer\Contracts\Entity;
 
 /**
  * 实体类接口

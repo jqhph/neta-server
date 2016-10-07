@@ -5,9 +5,9 @@
  * Date: 2016/9/13
  * Time: 16:15
  */
-namespace JQH\Pools\PDO;
+namespace NetaServer\Pools\PDO;
 
-class Sync extends \JQH\Basis\Pool
+class Sync extends \NetaServer\Basis\Pool
 {
     protected $max = 30;
 

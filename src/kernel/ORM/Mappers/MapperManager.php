@@ -1,7 +1,7 @@
 <?php
-namespace JQH\ORM\Mappers;
+namespace NetaServer\ORM\Mappers;
 
-class MapperManager extends \JQH\Basis\Factory
+class MapperManager extends \NetaServer\Basis\Factory
 {
 	protected $defaultName = 'SQLJ';
 	/**
@@ -9,7 +9,7 @@ class MapperManager extends \JQH\Basis\Factory
 	 * */
 	public function create($name) 
 	{
-		$class = '\\JQH\\ORM\\Mappers\\' . $name . '\\Mapper';
+		$class = '\\NetaServer\\ORM\\Mappers\\' . $name . '\\Mapper';
 
 		return new $class($this->container);
 	}

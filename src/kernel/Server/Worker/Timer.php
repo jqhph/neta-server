@@ -1,10 +1,10 @@
 <?php
-namespace JQH\Server\Worker;
+namespace NetaServer\Server\Worker;
 
-use \JQH\Injection\Container;
+use \NetaServer\Injection\Container;
 use \Swoole\Atomic;
-use \JQH\Support\Arr;
-use \JQH\Exceptions\InternalServerError;
+use \NetaServer\Support\Arr;
+use \NetaServer\Exceptions\InternalServerError;
 
 /**
  * 定时器管理类

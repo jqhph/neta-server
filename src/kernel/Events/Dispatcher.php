@@ -1,10 +1,10 @@
 <?php
-namespace JQH\Events;
+namespace NetaServer\Events;
 
-use \JQH\Injection\Container;
-use \JQH\Support\Str;
+use \NetaServer\Injection\Container;
+use \NetaServer\Support\Str;
 
-class Dispatcher implements \JQH\Contracts\Events\Dispatcher
+class Dispatcher implements \NetaServer\Contracts\Events\Dispatcher
 {
 	protected $container;
 	

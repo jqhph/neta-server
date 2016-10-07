@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Contracts\Cache;
+namespace NetaServer\Contracts\Cache;
 
 interface CacheInterface 
 {

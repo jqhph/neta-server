@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Utils\Log\Handler;
+namespace NetaServer\Utils\Log\Handler;
 
 use \Monolog\Logger;
-use \JQH\Injection\Container;
+use \NetaServer\Injection\Container;
 
 /**
  * 按日期分日志文件

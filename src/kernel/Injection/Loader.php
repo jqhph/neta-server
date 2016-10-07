@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Injection;
+namespace NetaServer\Injection;
 
-use \JQH\Injection\Container;
-use \JQH\Exceptions\InternalServerError;
+use \NetaServer\Injection\Container;
+use \NetaServer\Exceptions\InternalServerError;
 
 //加载器
 class Loader 
@@ -24,82 +24,82 @@ class Loader
 	 * */
 	protected $loadRule = [//加载器加载信息（优先查找load*方法，找不到再从此数组信息中找）
 			'container' => [
-				'class' => '\JQH\Injection\Container'
+				'class' => '\NetaServer\Injection\Container'
 			],
 			'config' => [
-				'class' => '\JQH\Config\Config'
+				'class' => '\NetaServer\Config\Config'
 			],
 			'events' => [
-				'class' => '\JQH\Events\Dispatcher',
+				'class' => '\NetaServer\Events\Dispatcher',
 				'dependencies' => 'container'	
 			],
 			'repository' => [
-				'class' => '\JQH\ORM\Repository',
+				'class' => '\NetaServer\ORM\Repository',
 				'dependencies' => ['mapperManager', 'container']	
 			],
 			'entityManager' => [
-				'class' => '\JQH\ORM\EntityManager',
+				'class' => '\NetaServer\ORM\EntityManager',
 				'dependencies' => 'container'
 			],
 			'router' => [
-				'class' => '\JQH\Router\Dispatch',
+				'class' => '\NetaServer\Router\Dispatch',
 				'dependencies' => 'container'	
 			],
 			'controllerManager' => [
-				'class' => '\JQH\Custom\ControllerManager',
+				'class' => '\NetaServer\Custom\ControllerManager',
 				'dependencies' => 'container'	
 			],
 			'fileManager' => [
-				'class' => '\JQH\Utils\File\FileManager',
+				'class' => '\NetaServer\Utils\File\FileManager',
 				'dependencies' => 'config'
 			],
 			'http.client' => [
-				'class' => '\\JQH\\Http\\Client'
+				'class' => '\\NetaServer\\Http\\Client'
 			],
 			'pipeline' => [
-				'class' => '\JQH\Pipeline\PipelineManager',
+				'class' => '\NetaServer\Pipeline\PipelineManager',
 				'dependencies' => 'container'	
 			],
 			'passwordHash' => [
-				'class' => '\JQH\Utils\PasswordHash',
+				'class' => '\NetaServer\Utils\PasswordHash',
 				'dependencies' => 'config'
 			],
 			'mapperManager' => [
-				'class' => '\JQH\ORM\Mappers\MapperManager',
+				'class' => '\NetaServer\ORM\Mappers\MapperManager',
 				'dependencies' => 'container'
 			],
 			'logger' => [
-				'class' => '\JQH\Log\Logger',
+				'class' => '\NetaServer\Log\Logger',
 				'dependencies' => 'container'
 			],
 			'modelFactory' => [
-				'class' => '\JQH\Custom\ModelFactory',
+				'class' => '\NetaServer\Custom\ModelFactory',
 				'dependencies' => 'container'
 			],
 			'cacheFactory' => [
-				'class' => '\JQH\Cache\CacheFactory',
+				'class' => '\NetaServer\Cache\CacheFactory',
 				'dependencies' => 'container'
 			],
 			'debug' => [
-				'class' => '\JQH\Utils\Debug\Statistical',
+				'class' => '\NetaServer\Utils\Debug\Statistical',
 				'dependencies' => 'container'
 			],
 			'exception.handler' => [
-				'class' => '\JQH\Exceptions\ExceptionHandler',
+				'class' => '\NetaServer\Exceptions\ExceptionHandler',
 				'dependencies' => 'container'
 			],
 			'events.robotCheck' => [
-				'class' => '\JQH\Helpers\Events\Route\RobotCheck'
+				'class' => '\NetaServer\Helpers\Events\Route\RobotCheck'
 			],
 			'pdo' => [
-				'class' => '\JQH\ORM\DB\PDO'
+				'class' => '\NetaServer\ORM\DB\PDO'
 			],
 			'redis' => [
-				'class' => '\JQH\ORM\DB\Redis'
+				'class' => '\NetaServer\ORM\DB\Redis'
 			],
 
 			'server.timer' => [
-				'class' => '\JQH\Server\Worker\Timer',
+				'class' => '\NetaServer\Server\Worker\Timer',
 				'dependencies' => 'container'
 			],
 //********************************************	

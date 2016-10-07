@@ -1,9 +1,9 @@
 <?php
-namespace JQH\Basis\Model;
+namespace NetaServer\Basis\Model;
 
-use \JQH\Exceptions\InternalServerError;
+use \NetaServer\Exceptions\InternalServerError;
 
-class Base extends \JQH\ORM\Entity
+class Base extends \NetaServer\ORM\Entity
 {
 	/**
 	 * 查询某条数据是否存在
@@ -160,7 +160,7 @@ class Base extends \JQH\ORM\Entity
 		if ($config === null) {
 			return $this->__container->get('pdo');
 		}
-		return new \JQH\ORM\DB\PDO($this->getConfig(), $config);
+		return new \NetaServer\ORM\DB\PDO($this->getConfig(), $config);
 	}
 
 	/**

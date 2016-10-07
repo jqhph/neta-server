@@ -1,5 +1,5 @@
 <?php
-namespace JQH\ORM\DB;
+namespace NetaServer\ORM\DB;
 
 class Redis
 {

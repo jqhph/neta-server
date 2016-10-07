@@ -1,13 +1,13 @@
 <?php
-namespace JQH\Log;
+namespace NetaServer\Log;
 
-use \JQH\Support\Arr;
-use \JQH\Utils\Log\Logger as Monolog;
+use \NetaServer\Support\Arr;
+use \NetaServer\Utils\Log\Logger as Monolog;
 
 /**
  * 日志处理 
  * */
-class Logger extends \JQH\Utils\Log\Base 
+class Logger extends \NetaServer\Utils\Log\Base 
 {
 	protected $levels = [
 		100 => 'debug', 200 => 'info', 250 => 'notice', 550 => 'alert',
@@ -107,7 +107,7 @@ class Logger extends \JQH\Utils\Log\Base
 		
 			$handler = Arr::get($info, 'handler', $defaultConfig['handlers'][0]['handler']);
 				
-			$handelClass = '\\JQH\\Utils\\Log\\Handler\\' . $handler;
+			$handelClass = '\\NetaServer\\Utils\\Log\\Handler\\' . $handler;
 			if (! class_exists($handelClass)) {
 				$handelClass = '\\Monolog\\Handler\\' . $handler;
 			}
@@ -127,7 +127,7 @@ class Logger extends \JQH\Utils\Log\Base
 			}
 		
 			if (! empty($info['formatter'])) {
-				$fomatterClass = '\\JQH\\Utils\\Log\\Formatter\\' . $info['formatter'];
+				$fomatterClass = '\\NetaServer\\Utils\\Log\\Formatter\\' . $info['formatter'];
 				if (! class_exists($fomatterClass)) {
 					$fomatterClass = '\\Monolog\\Formatter\\' . $info['formatter'];
 				}
@@ -151,12 +151,12 @@ class Logger extends \JQH\Utils\Log\Base
 	public function debug($msg, $path = null) 
 	{
 		if(! isset($this->instances['debug'])) {
-			$this->instances['debug'] = new \JQH\Utils\Log\Logger('debug');
+			$this->instances['debug'] = new \NetaServer\Utils\Log\Logger('debug');
 			if (! $path) {
 				$path = 'data/logs/debug.log';
 			}
 			
-			$this->instances['debug']->pushHandler(new \JQH\Utils\Log\Handler\DebugHandler($path));
+			$this->instances['debug']->pushHandler(new \NetaServer\Utils\Log\Handler\DebugHandler($path));
 		}
 		
 		$content = & $msg;

@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Helpers\Events\Route;
+namespace NetaServer\Helpers\Events\Route;
 
 /**
  * 机器人检测

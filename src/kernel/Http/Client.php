@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Http;
+namespace NetaServer\Http;
 
 /**
  * Curl

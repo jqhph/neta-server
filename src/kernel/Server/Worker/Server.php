@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Server\Worker;
+namespace NetaServer\Server\Worker;
 
-use \JQH\Exceptions\InternalServerError;
-use \JQH\Injection\Container;
+use \NetaServer\Exceptions\InternalServerError;
+use \NetaServer\Injection\Container;
 
 /**
  * worker进程基础类

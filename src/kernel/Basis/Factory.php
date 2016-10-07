@@ -1,7 +1,7 @@
 <?php
-namespace JQH\Basis;
+namespace NetaServer\Basis;
 
-use \JQH\Injection\Container;
+use \NetaServer\Injection\Container;
 
 abstract class Factory
 {

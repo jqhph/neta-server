@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Utils\Log;
+namespace NetaServer\Utils\Log;
 
 class Logger extends \Monolog\Logger
 {

@@ -9,8 +9,8 @@
  * ========================
  * */
 
-use \JQH\Injection\Container;
-use \JQH\Support\Str;
+use \NetaServer\Injection\Container;
+use \NetaServer\Support\Str;
 
 # 注册全局变量代替静态方法获取容器
 $GLOBALS['__app__'] = Container::getInstance();

@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Contracts\Mapper;
+namespace NetaServer\Contracts\Mapper;
 /**
  * 映射器接口
  * */

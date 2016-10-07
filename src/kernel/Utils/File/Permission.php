@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Utils\File;
+namespace NetaServer\Utils\File;
 
 class Permission 
 {

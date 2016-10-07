@@ -1,7 +1,7 @@
 <?php
-namespace JQH\Exceptions;
+namespace NetaServer\Exceptions;
 
-use \JQH\Injection\Container;
+use \NetaServer\Injection\Container;
 
 /**
  * 异常处理
@@ -13,14 +13,14 @@ class exception.handler
 	 * */
 	protected $config;
 	/**
-	 * \JQH\Logger
+	 * \NetaServer\Logger
 	 * */
 	protected $logger;
 	
 	protected $exceptionClasses = [
 		'\PDOException' => 'db', 
 		'\RedisException' => 'db', 
-		'\JQH\Exceptions\Exception' => 'app'
+		'\NetaServer\Exceptions\Exception' => 'app'
 	];
 	
 	protected $logConfig;
@@ -55,7 +55,7 @@ class exception.handler
 	public function normal($e)
 	{
 		//默认错误级别
-		$level = \JQH\Exceptions\Exception::ERROR;
+		$level = \NetaServer\Exceptions\Exception::ERROR;
 			
 		$this->logger->exception(
 				$level, $e->getMessage(),  $e->getCode(), $e->getLine(), $e->getFile()

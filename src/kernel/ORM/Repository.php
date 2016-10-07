@@ -1,8 +1,8 @@
 <?php
-namespace JQH\ORM;
+namespace NetaServer\ORM;
 
-use \JQH\ORM\Mappers\MapperManager;
-use \JQH\Injection\Container;
+use \NetaServer\ORM\Mappers\MapperManager;
+use \NetaServer\Injection\Container;
 
 
 /**

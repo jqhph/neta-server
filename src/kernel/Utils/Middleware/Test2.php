@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Utils\Middleware;
+namespace NetaServer\Utils\Middleware;
 
 class Test2
 {

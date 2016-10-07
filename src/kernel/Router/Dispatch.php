@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Router;
+namespace NetaServer\Router;
 
-use \JQH\Injection\Container;
-use \JQH\Support\Arr;
+use \NetaServer\Injection\Container;
+use \NetaServer\Support\Arr;
 
 /**
  * 路由解析

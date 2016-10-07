@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Server\Worker;
+namespace NetaServer\Server\Worker;
 
 /**
  * Websocket服务基础类

@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Server;
+namespace NetaServer\Server;
 
 /**
  * Created by PhpStorm.
@@ -7,7 +7,7 @@ namespace JQH\Server;
  * Date: 2016/9/19
  * Time: 15:13
  */
-class WorkerManager extends \JQH\Basis\Factory
+class WorkerManager extends \NetaServer\Basis\Factory
 {
     public function create()
     {

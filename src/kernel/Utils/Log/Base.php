@@ -1,10 +1,10 @@
 <?php
-namespace JQH\Utils\Log;
+namespace NetaServer\Utils\Log;
 
-use \JQH\Utils\Log\Logger;
+use \NetaServer\Utils\Log\Logger;
 use \Monolog\Handler\HandlerInterface;
 
-class Base extends \JQH\Basis\Factory
+class Base extends \NetaServer\Basis\Factory
 {
 	protected $channelName;
 	

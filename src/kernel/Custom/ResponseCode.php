@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Custom;
+namespace NetaServer\Custom;
 
 class ResponseCode
 {

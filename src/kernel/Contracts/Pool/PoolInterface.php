@@ -5,7 +5,7 @@
  * Date: 2016/9/13
  * Time: 16:33
  */
-namespace JQH\Contracts\Pool;
+namespace NetaServer\Contracts\Pool;
 
 interface PoolInterface
 {

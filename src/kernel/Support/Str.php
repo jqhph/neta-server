@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Support;
+namespace NetaServer\Support;
 
 use RuntimeException;
 
@@ -281,7 +281,7 @@ class Str
      *
      * Note: This method will leak length information.
      *
-     * Note: Adapted from Symfony\Component\Security\JQH\Util\StringUtils.
+     * Note: Adapted from Symfony\Component\Security\NetaServer\Util\StringUtils.
      *
      * @param  string  $knownString
      * @param  string  $userInput

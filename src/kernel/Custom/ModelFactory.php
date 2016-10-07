@@ -1,7 +1,7 @@
 <?php
-namespace JQH\Custom;
+namespace NetaServer\Custom;
 
-use \JQH\Basis\Factory;
+use \NetaServer\Basis\Factory;
 
 /**
  * model工厂类
@@ -22,7 +22,7 @@ class ModelFactory extends Factory
 			}
 		} else {
 			if (! class_exists($className)) {
-				$className = '\\JQH\\Basis\\Model\\Base';
+				$className = '\\NetaServer\\Basis\\Model\\Base';
 			}
 		}
 		

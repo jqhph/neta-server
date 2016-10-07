@@ -1,9 +1,9 @@
 <?php
-namespace JQH\ORM\DB;
+namespace NetaServer\ORM\DB;
 
-use \JQH\Config\Config;
-use \JQH\Support\Arr;
-use \JQH\Exceptions\InternalServerError;
+use \NetaServer\Config\Config;
+use \NetaServer\Support\Arr;
+use \NetaServer\Exceptions\InternalServerError;
 
 class PDO 
 {

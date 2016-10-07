@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Server\Swoole;
+namespace NetaServer\Server\Swoole;
 
-use \JQH\Exceptions\InternalServerError;
-use \JQH\Injection\Container;
+use \NetaServer\Exceptions\InternalServerError;
+use \NetaServer\Injection\Container;
 use \Swoole\Atomic;
 
 /**
@@ -20,7 +20,7 @@ abstract class Server
 	protected $serverType;
 
 	/**
-	 * @var \JQH\Injection\Container
+	 * @var \NetaServer\Injection\Container
 	 * */
 	protected $container;
 
@@ -56,7 +56,7 @@ abstract class Server
 		'debug',
 		'controllerManager',
 		'server.timer',
-		'application', # \JQH\Application
+		'application', # \NetaServer\Application
 		'swoole.server', # \Swoole\Server
 	];
 
@@ -387,7 +387,7 @@ abstract class Server
 		$className = '\\App\\' . __MODULE__ . '\\Server\\' . $class;
 		if (! class_exists($className)) {
 			logger('server')->warning('找不到[' . $className . '], 请自定义业务逻辑处理类！');
-			$className = '\\JQH\\Server\\Worker\\' . $class;
+			$className = '\\NetaServer\\Server\\Worker\\' . $class;
 		}
 
 		return new $className($this->container, $class);

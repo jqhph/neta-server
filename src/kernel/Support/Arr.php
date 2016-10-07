@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Support;
+namespace NetaServer\Support;
 
 use ArrayAccess;
 

@@ -1,9 +1,9 @@
 <?php
-namespace JQH\ORM;
+namespace NetaServer\ORM;
 
-use \JQH\Injection\Container;
+use \NetaServer\Injection\Container;
 
-abstract class Entity implements \JQH\Contracts\Entity\EntityInterface 
+abstract class Entity implements \NetaServer\Contracts\Entity\EntityInterface 
 {
 	const BELONGS_TO   	   = 'BELONGS_TO';
 	const HAS_MANY         = 'HAS_MANY';

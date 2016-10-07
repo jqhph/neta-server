@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Contracts\Container;
+namespace NetaServer\Contracts\Container;
 
 use Closure;
 

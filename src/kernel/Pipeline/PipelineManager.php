@@ -1,7 +1,7 @@
 <?php
-namespace JQH\Pipeline;
+namespace NetaServer\Pipeline;
 
-use JQH\Basis\Factory;
+use NetaServer\Basis\Factory;
 
 class PipelineManager extends Factory
 {
@@ -9,6 +9,6 @@ class PipelineManager extends Factory
 	
 	public function create($name)
 	{
-		return new \JQH\Pipeline\Pipeline($this->container);
+		return new \NetaServer\Pipeline\Pipeline($this->container);
 	}
 }

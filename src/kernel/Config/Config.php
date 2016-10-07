@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Config;
+namespace NetaServer\Config;
 
 use \Spyc;
-use \JQH\Support\Arr;
+use \NetaServer\Support\Arr;
 
 class Config 
 {

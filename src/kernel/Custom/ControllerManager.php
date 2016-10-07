@@ -1,13 +1,13 @@
 <?php
-namespace JQH\Custom;
+namespace NetaServer\Custom;
 
-use \JQH\Basis\Pool;
-use \JQH\Exceptions\NotFound;
+use \NetaServer\Basis\Pool;
+use \NetaServer\Exceptions\NotFound;
 
 /**
  * 控制器管理类
  * */
-class ControllerManager extends \JQH\Basis\Factory
+class ControllerManager extends \NetaServer\Basis\Factory
 {
 	/**
 	 * 生产一个控制器对象

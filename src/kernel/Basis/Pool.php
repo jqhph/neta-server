@@ -7,15 +7,15 @@
  * Date: 2016/9/13
  * Time: 12:44
  */
-namespace JQH\Basis;
+namespace NetaServer\Basis;
 
-use JQH\Exceptions\InternalServerError;
-use \JQH\Injection\Container;
+use NetaServer\Exceptions\InternalServerError;
+use \NetaServer\Injection\Container;
 
 abstract class Pool
 {
     /**
-     * @var \JQH\Injection\Container
+     * @var \NetaServer\Injection\Container
      * */
     protected $container;
 

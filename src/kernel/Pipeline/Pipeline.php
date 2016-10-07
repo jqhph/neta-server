@@ -1,10 +1,10 @@
 <?php
-namespace JQH\Pipeline;
+namespace NetaServer\Pipeline;
 
-use \JQH\Injection\Container;
+use \NetaServer\Injection\Container;
 use \Closure;
 
-class Pipeline implements \JQH\Contracts\Pipeline\PipelineInterface
+class Pipeline implements \NetaServer\Contracts\Pipeline\PipelineInterface
 {
 	/**
 	 * The container implementation.

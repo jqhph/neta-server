@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Utils\Log\Formatter;
+namespace NetaServer\Utils\Log\Formatter;
 
 class TextFormatter extends \Monolog\Formatter\LineFormatter 
 {

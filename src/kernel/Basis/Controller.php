@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Basis;
+namespace NetaServer\Basis;
 
-use \JQH\Injection\Container;
-use \JQH\Custom\ResponseCode;
+use \NetaServer\Injection\Container;
+use \NetaServer\Custom\ResponseCode;
 
 class Controller 
 {

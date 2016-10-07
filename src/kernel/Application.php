@@ -1,15 +1,15 @@
 <?php
-namespace JQH;
+namespace NetaServer;
 
-use \JQH\Server\Swoole\Websocket;
-use \JQH\Server\Swoole\Tcp;
+use \NetaServer\Server\Swoole\Websocket;
+use \NetaServer\Server\Swoole\Tcp;
 
 class Application 
 {
 	/**
 	 * 服务容器
 	 * 
-	 * @var \JQH\Injection\Container
+	 * @var \NetaServer\Injection\Container
 	 * */
 	protected $container;
 	

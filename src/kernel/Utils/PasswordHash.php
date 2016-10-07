@@ -1,5 +1,5 @@
 <?php
-namespace JQH\Utils;
+namespace NetaServer\Utils;
 
 class PasswordHash 
 {
@@ -12,7 +12,7 @@ class PasswordHash
 	 */
 	private $saltFormat = '$6${0}$';
 
-	public function __construct(\JQH\Config\Config $config) 
+	public function __construct(\NetaServer\Config\Config $config) 
 	{
 		$this->config = $config;
 	}
@@ -51,7 +51,7 @@ class PasswordHash
 	{
 		$salt = $this->getConfig()->get('passwordSalt');
 		if (! isset($salt)) {
-			throw new \JQH\Exceptions\Error('Option "passwordSalt" does not exist in config.php');
+			throw new \NetaServer\Exceptions\Error('Option "passwordSalt" does not exist in config.php');
 		}
 
 		$salt = $this->normalizeSalt($salt);

@@ -1,8 +1,8 @@
 <?php
-namespace JQH\Server\Swoole;
+namespace NetaServer\Server\Swoole;
 
-use JQH\Exceptions\Exception;
-use JQH\Exceptions\InternalServerError;
+use NetaServer\Exceptions\Exception;
+use NetaServer\Exceptions\InternalServerError;
 use \Swoole\Websocket\Server as WS;
 
 /**

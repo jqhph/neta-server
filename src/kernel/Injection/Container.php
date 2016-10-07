@@ -1,12 +1,12 @@
 <?php
-namespace JQH\Injection;
+namespace NetaServer\Injection;
 
-use \JQH\Exceptions\InternalServerError;
+use \NetaServer\Exceptions\InternalServerError;
 
 /**
  * 服务容器
  * */
-class Container implements \JQH\Contracts\Container\ContainerInterface
+class Container implements \NetaServer\Contracts\Container\ContainerInterface
 {
 	# 加载器
 	protected $loader;
