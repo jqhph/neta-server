@@ -85,7 +85,7 @@ class Loader
 				'dependencies' => 'container'
 			],
 			'exception.handler' => [
-				'class' => '\NetaServer\Exceptions\ExceptionHandler',
+				'class' => '\NetaServer\Exceptions\Handlers\Handler',
 				'dependencies' => 'container'
 			],
 			'events.robotCheck' => [
