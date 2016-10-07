@@ -1,0 +1,43 @@
+{
+    "name": "neta-server/framework",
+    "description": "The simple server framework.",
+    "keywords": ["framework", "neta-server", "swoole"],
+    "license": "MIT",
+    "homepage": "http://119.29.34.145",
+    "support": {
+        "issues": "https://github.com/jqhph/neta-server/issues",
+        "source": "https://github.com/jqhph/neta-server"
+    },
+    "authors": [
+        {
+            "name": "JQH",
+            "email": "841324345@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "monolog/monolog": "~1.11",
+        "vlucas/phpdotenv": "~2.2",
+        "mustangostang/spyc": "*"
+    },
+    "replace": {
+
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.1"
+    },
+    "autoload": {
+        "files": [
+            "src/kernel/Helpers/Common.php"
+        ],
+        "psr-4": {
+            "JQH\\": "src/kernel/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "minimum-stability": "dev"
+}
