@@ -31,7 +31,7 @@
             "src/kernel/Helpers/Common.php"
         ],
         "psr-4": {
-            "JQH\\": "src/kernel/"
+            "NetaServer\\": "src/kernel/"
         }
     },
     "extra": {
