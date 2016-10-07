@@ -37,9 +37,9 @@ class Controller
 	 * @param $name string 模块名称（类名）
 	 * @return Model Object
 	 * */
-	protected function model($name = __CONTROLLER__) 
+	protected function model($name = null)
 	{
-		return $this->container->get('modelFactory')->get($name);
+		return $this->container->get('modelFactory')->get($name ?: $this->name);
 	}
 	
 	/**
@@ -63,9 +63,9 @@ class Controller
 	 * @param string $name 模型名称，注意：大小写敏感！！！
 	 * @return instance
 	 * */
-	protected function repository($name = __CONTROLLER__)
+	protected function repository($name = null)
 	{
-		return $this->container->get('repository')->from($name);
+		return $this->container->get('repository')->from($name ?: $this->tableName);
 	}
 	
 	/**
@@ -154,9 +154,8 @@ class Controller
 	
 	public function setControllerName($controllerName)
 	{
-		$this->name = & $controllerName;
+		$this->name      = & $controllerName;
 		$this->tableName = get_db_field($controllerName);
-		define('__TABLE__', $this->tableName);
 	}
 	
 	/**

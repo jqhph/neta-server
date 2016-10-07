@@ -150,6 +150,24 @@ if (! function_exists('redis')) {
 	}
 }
 
+/**
+ * 驼峰命名转化为下划线命名
+ * */
+if (! function_exists('get_db_field')) {
+	function get_db_field($str)
+	{
+		$str = preg_replace_callback('/([A-Z])/', 'to_db_field', $str);
+		return trim($str, '_');
+	}
+}
+
+if (! function_exists('to_db_field')) {
+	function to_db_field(& $text)
+	{
+		return '_' . strtolower($text[1]);
+	}
+}
+
 if (! function_exists('info')) {
 	function info($info)
 	{

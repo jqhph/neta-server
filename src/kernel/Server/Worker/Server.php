@@ -51,7 +51,7 @@ abstract class Server
      * 服务启动前会调用此方法, 此方法可用于执行只能在服务启动前做的操作
      * 如初始化计数器、初始化内存共享table等
      * */
-    public function beforeServerStart(\Server\Swoole\Server $server)
+    public function beforeServerStart(\NetaServer\Server\Swoole\Server $server)
     {
 
     }

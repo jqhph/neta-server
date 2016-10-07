@@ -165,6 +165,17 @@ class Container implements \NetaServer\Contracts\Container\ContainerInterface
 		return isset(self::$instances['container']) ? self::$instances['container'] : new static();
 	}
 
+	public function clear($except = [])
+	{
+		$new = [];
+		foreach ((array) $except as & $e) {
+			if (isset(self::$instances[$e])) {
+				$new[$e] = self::$instances[$e];
+			}
+		}
+		self::$instances = $new;
+	}
+
 	/**
 	 * 获取标准的类名
 	 * */

@@ -49,8 +49,7 @@ class Application
 	
 	protected function init() 
 	{
-		//error_reporting(-1);
-		if ($this->getConfig()->get('php.debug', false)) {
+		if (C('php.debug', false)) {
 			# 开发环境开启错误提示
 			ini_set('error_reporting', E_ALL);
 			ini_set('display_errors', 1);
@@ -144,7 +143,7 @@ class Application
 	 *
 	 * @return void
 	 */
-	protected function checkError()
+	public function checkError()
 	{
 		$log = '当前进程异常退出！';
 		$error = error_get_last();
