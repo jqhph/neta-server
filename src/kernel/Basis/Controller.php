@@ -58,14 +58,14 @@ class Controller
 	 * 获取数据仓库（可以对数据进行增删改查），类似TP的D方法
 	 * 在不需要模型的情况下建议直接调用此函数进行数据库操作 ，消耗较小
 	 * 使用示例：
-	 * 	R()->where('id', '>', 1)->read();
+	 * 	Q('user')->where('id', '>', 1)->read();
 	 *
 	 * @param string $name 模型名称，注意：大小写敏感！！！
 	 * @return instance
 	 * */
-	protected function repository($name = null)
+	protected function query($name = null)
 	{
-		return $this->container->get('repository')->from($name ?: $this->tableName);
+		return $this->container->get('query')->from($name ?: $this->tableName);
 	}
 	
 	/**

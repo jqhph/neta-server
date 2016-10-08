@@ -52,6 +52,13 @@ if (! function_exists('C')) {
 	}
 }
 
+if (! function_exists('Q')) {
+	function Q($name = null)
+	{
+		return $GLOBALS['__app__']->get('query')->from($name);
+	}
+}
+
 /**
  * 获取控制器
  *

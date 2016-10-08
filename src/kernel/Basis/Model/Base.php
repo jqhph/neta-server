@@ -14,7 +14,7 @@ class Base extends \NetaServer\ORM\Entity
 		if (! $this->__id) {
 			return false;
 		}
-		return $this->repository()->select('id')->where('id', $this->__id)->readRow();
+		return $this->query()->select('id')->where('id', $this->__id)->readRow();
 	}
 
 	/**
@@ -46,7 +46,7 @@ class Base extends \NetaServer\ORM\Entity
 			return $find;
 		}
 
-		$result = $this->repository()->select($data)->where('id', $this->__id)->readRow();
+		$result = $this->query()->select($data)->where('id', $this->__id)->readRow();
 		if ($result) {
 			$this->set($result);
 
@@ -69,7 +69,7 @@ class Base extends \NetaServer\ORM\Entity
 
 		$this->beforeUpdate($id, $data);
 
-		$res = $this->repository()->where('id', $id)->update($data);
+		$res = $this->query()->where('id', $id)->update($data);
 		if ($res) {
 			$this->afterUpdate($id, $data);
 		}
@@ -92,7 +92,7 @@ class Base extends \NetaServer\ORM\Entity
 
 		$this->beforeCreate($data);
 
-		$res = $this->repository()->insert($data);
+		$res = $this->query()->insert($data);
 		if ($this->isIncrId()) {//自增Id
 			$this->set('id', $res);
 		}
@@ -147,7 +147,7 @@ class Base extends \NetaServer\ORM\Entity
 		}
 
 		$this->beforeRemove($id);
-		$res = $this->repository()->remove($id);
+		$res = $this->query()->remove($id);
 		if ($res) {
 			$this->afterRemove($id);
 		}
@@ -166,9 +166,9 @@ class Base extends \NetaServer\ORM\Entity
 	/**
 	 * 实体和数据库表之间的映射管理者（对接数据库）
 	 * */
-	protected function repository()
+	protected function query()
 	{
-		return $this->__container->get('repository')->from($this->entityTableName);
+		return $this->__container->get('query')->from($this->entityTableName);
 	}
 
 	protected function getConfig()

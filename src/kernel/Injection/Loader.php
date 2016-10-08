@@ -33,8 +33,8 @@ class Loader
 				'class' => '\NetaServer\Events\Dispatcher',
 				'dependencies' => 'container'	
 			],
-			'repository' => [
-				'class' => '\NetaServer\ORM\Repository',
+			'query' => [
+				'class' => '\NetaServer\ORM\Query',
 				'dependencies' => ['mapper.manager', 'container']	
 			],
 			'router' => [
