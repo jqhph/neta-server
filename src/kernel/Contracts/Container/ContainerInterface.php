@@ -14,7 +14,7 @@ interface ContainerInterface
 	 * @param  bool  $shared
 	 * @return void
 	 */
-	public function bind($abstract, $concrete, $dependencies = '');
+// 	public function bind($abstract, $concrete, $dependencies = '');
 
 	/**
 	 * Register an existing instance as shared in the container.
@@ -34,24 +34,15 @@ interface ContainerInterface
 	 * @return mixed
 	 */
 	public function make($abstract);
-
+	
 	/**
-	 * 获取注册服务
+	 * Instantiate a concrete instance of the given type.
 	 *
-	 * @param  string  $abstract
+	 * @param  string  $concrete
+	 * @param  array   $parameters
 	 * @return mixed
-	 * */
-	public function get($abstract);
-
-
-	/**
-	 * 注册服务类实例
-	 *
-	 * @param  string  $abstract
-	 * @param  object  $instance
-	 * @return mixed
-	 * */
-	public function set($abstract, $instance);
+	 */
+	public function build($concrete);
 
 	/**
 	 * 存取数据

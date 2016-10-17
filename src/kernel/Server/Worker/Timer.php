@@ -45,6 +45,8 @@ class Timer
     protected static $timerRunCounterX;
 
     protected static $listeners;
+    
+    protected static $concretes;
 
     /**
      * 每40亿重置一次计数器
@@ -54,7 +56,7 @@ class Timer
     public function __construct(Container $container)
     {
         $this->container = $container;
-        //$this->server    = $container->get('app.server');
+        //$this->server    = $container->make('app.server');
     }
 
     /**
@@ -72,7 +74,7 @@ class Timer
         # 计数+1
         $this->addCount($name);
         # 回调指定的方法
-        call_user_func(self::$listeners[$name], $timeId, $name);
+        call_user_func($this->makeListener($name), $timeId, $name);
     }
 
     /**
@@ -98,9 +100,16 @@ class Timer
      *
      * @return int
      */
-    public function getCount($name)
+    public function count($name = null)
     {
-        return self::$timerRunCounterX[$name]->get() * $this->X + self::$timerRunCounter[$name]->get();
+    	if ($name) {
+        	return self::$timerRunCounterX[$name]->get() * $this->X + self::$timerRunCounter[$name]->get();
+    	}
+    	$new = [];
+    	foreach (self::$listeners as $k => $v) {
+    		$new[$k] = self::$timerRunCounterX[$k]->get() * $this->X + self::$timerRunCounter[$k]->get();
+    	}
+    	return $new;
     }
 
     /**
@@ -120,10 +129,10 @@ class Timer
         $interval = Arr::getValue($config, 'interval', 3000);
 
         # 开启定时器
-        $this->tick($config['interval'], $name);
+        $this->tick($interval, $name);
     }
 
-    protected function addListener($name, callable $call)
+    protected function addListener($name, $call)
     {
         self::$listeners[$name] = $call;
     }
@@ -137,18 +146,17 @@ class Timer
             return;
         }
         foreach ($timer as $name => $v) {
-            $call = $this->getListener($v['call']);
-            if (! $call) {
+            if (! isset($v['call'])) {
+            	warn("缺少回调方法（call），开启定时器【$name】失败");
                 continue;
             }
             # 保存回调方法
-            $this->addListener($name, $call);
-
+            $this->addListener($name, $v['call']);
+ 
             # 初始化计数器
             self::$timerRunCounter[$name]  = new Atomic();
             self::$timerRunCounterX[$name] = new Atomic();
         }
-
     }
 
     /**
@@ -177,19 +185,23 @@ class Timer
      * @param string $listener
      * @return callable
      * */
-    protected function getListener($listener)
+    protected function makeListener($name)
     {
-        list($class, $method) = $this->parseClassCallable($listener);
+    	if (isset(self::$concretes[$name])) {
+    		return self::$concretes[$name];
+    	}
+    	
+        list($class, $method) = $this->parseClassCallable(self::$listeners[$name]);
 
-        $controller = $this->container->get('controller.manager')->get($class);
+        $controller = $this->container->make('controller.manager')->get($class);
 
         if (! method_exists($controller, $method)) {
             $msg = "Cant't fount method: $method from $class!";
             warn($msg);
             throw new InternalServerError($msg);
         }
-
-        return [$controller, $method];
+        
+        return self::$concretes[$name] = [$controller, $method];
     }
 
     /**

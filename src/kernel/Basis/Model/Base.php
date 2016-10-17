@@ -158,7 +158,7 @@ class Base extends \NetaServer\ORM\Entity
 	protected function pdo(array $config = null)
 	{
 		if ($config === null) {
-			return $this->__container->get('pdo');
+			return $this->__container->make('pdo');
 		}
 		return new \NetaServer\ORM\DB\PDO($this->getConfig(), $config);
 	}
@@ -168,27 +168,27 @@ class Base extends \NetaServer\ORM\Entity
 	 * */
 	protected function query()
 	{
-		return $this->__container->get('query')->from($this->entityTableName);
+		return $this->__container->make('query')->from($this->entityTableName);
 	}
 
 	protected function getConfig()
 	{
-		return $this->__container->get('config');
+		return $this->__container->make('config');
 	}
 
 	protected function cache()
 	{
-		return $this->__container->get('cache.factory')->get();
+		return $this->__container->make('cache.factory')->get();
 	}
 
 	protected function logger()
 	{
-		return $this->__container->get('logger');
+		return $this->__container->make('logger');
 	}
 
 	protected function getPasswordHash()
 	{
-		return $this->__container->get('passwordHash');
+		return $this->__container->make('passwordHash');
 	}
 
 }

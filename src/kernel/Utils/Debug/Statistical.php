@@ -18,9 +18,5 @@ class Statistical
 
 	}
 
-	protected function getConfig()
-	{
-		return $this->container->get('config');
-	}
 	
 }

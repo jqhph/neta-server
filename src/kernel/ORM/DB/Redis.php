@@ -1,6 +1,8 @@
 <?php
 namespace NetaServer\ORM\DB;
 
+use \NetaServer\Support\Arr;
+
 class Redis
 {
 	private static $host;
@@ -8,6 +10,8 @@ class Redis
 	private static $pwd;
 	private static $db;
 	private $redis;
+
+	protected $usepool;
 	
 	public function __construct(array $config = [])
 	{
@@ -17,11 +21,13 @@ class Redis
 			$config = C('db.redis');
 		}
 
+		$this->usepool = Arr::getValue($config, 'usepool');
+
 		if (empty(self::$host)) {
-			self::$host = $config['host'];
-			self::$port = $config['port'];
-			self::$pwd  = $config['pwd'];
-			self::$db   = $config['db'];
+			self::$host = Arr::getValue($config, 'host');
+			self::$port = Arr::getValue($config, 'port');
+			self::$pwd  = Arr::getValue($config, 'pwd');
+			self::$db   = Arr::getValue($config, 'db');
 		}
 		
 		$this->connect();
@@ -34,12 +40,24 @@ class Redis
 	{
 		app('exception.handler')->run($e);
 	}
+
+	public function release()
+	{
+		if ($this->usepool) {
+			$this->redis->release();
+		}
+	}
 	
 	////Redis server went away  Connection closed
 	private function connect() 
 	{
 		try {
-			$this->redis = new \Redis();
+			if ($this->usepool) {
+				$this->redis = new \redisProxy();
+			} else {
+				$this->redis = new \Redis();
+			}
+
 			$this->redis->connect(self::$host, self::$port, 0);
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
@@ -71,9 +89,11 @@ class Redis
 	public function set($key, $value = null, $timeout = null) {
 		try {
 			if ($timeout === null)
-				return $this->redis->set($key, $value);
+				$res = $this->redis->set($key, $value);
 			else
-				return $this->redis->setex($key, $timeout, $value);//key存在则替换原来的值 TTL方法获取剩余缓存时间
+				$res = $this->redis->setex($key, $timeout, $value);//key存在则替换原来的值 TTL方法获取剩余缓存时间
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -89,28 +109,34 @@ class Redis
 	public function keys($where)
 	{
 		try {
-			return $this->redis->keys($where);
+			$res = $this->redis->keys($where);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
 	}
-	
+
 	//自增一
 	public function incr($key)
 	{
 		try {
-			return $this->redis->incr($key);
+			$res = $this->redis->incr($key);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
 	}
-	
-	
+
+
 	//获取字符串
 	public function get($keys)
 	{
 		try {
-			return $this->redis->get($keys);
+			$res = $this->redis->get($keys);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -121,27 +147,111 @@ class Redis
 	{
 		try {
 			$this->redis->expire($key, $second);
+			$this->release();
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
 	}
-	
+
 	public function del($key)
 	{
 		try {
-			return $this->redis->del($key);
+			$res = $this->redis->del($key);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
 	}
-	
+
+	//************************************无序集合
+	public function sAdd($key, $val)
+	{
+		try {
+			$res = $this->redis->sAdd($key, $val);
+			$this->release();
+			return $res;
+		} catch (\RedisException $e) {
+			$this->dealErrorInfo($e);
+		}
+	}
+
+	public function sRem($key, $val)
+	{
+		try {
+			$res = $this->redis->sRem($key, $val);
+			$this->release();
+			return $res;
+		} catch (\RedisException $e) {
+			$this->dealErrorInfo($e);
+		}
+	}
+	//是否存在
+	public function sIsMember($key, $val)
+	{
+		try {
+			$res = $this->redis->sIsMember($key, $val);
+			$this->release();
+			return $res;
+		} catch (\RedisException $e) {
+			$this->dealErrorInfo($e);
+		}
+	}
+	//返回集合成员个数
+	public function sSize($key)
+	{
+		try {
+			$res = $this->redis->sSize($key);
+			$this->release();
+			return $res;
+		} catch (\RedisException $e) {
+			$this->dealErrorInfo($e);
+		}
+	}
+	//随机返回一个成员并删除
+	public function sPop($key)
+	{
+		try {
+			$res = $this->redis->sPop($key);
+			$this->release();
+			return $res;
+		} catch (\RedisException $e) {
+			$this->dealErrorInfo($e);
+		}
+	}
+
+	//随机返回一个成员不删除
+	public function sRandMember($key)
+	{
+		try {
+			$res = $this->redis->sRandMember($key);
+			$this->release();
+			return $res;
+		} catch (\RedisException $e) {
+			$this->dealErrorInfo($e);
+		}
+	}
+
+	public function __call($name, $arguments)
+	{
+		try {
+			$res = call_user_func_array([$this->redis, $name], $arguments);
+			$this->release();
+			return $res;
+		} catch (\RedisException $e) {
+			$this->dealErrorInfo($e);
+		}
+	}
+
 	//****************************哈希操作
 	
 	//指定值+= $num即为要增加的整数，如果是减少则传负数即可
 	public function hIncrby($key, $field, $num)
 	{
 		try {
-			return $this->redis->hIncrBy($key, $field, $num);
+			$res = $this->redis->hIncrBy($key, $field, $num);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -152,7 +262,9 @@ class Redis
 	public function hMset($key, $data)
 	{
 		try {
-			return $this->redis->hMset($key, $data);
+			$res = $this->redis->hMset($key, $data);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -161,7 +273,9 @@ class Redis
 	public function hMget($key, $fields)
 	{
 		try {
-			return $this->redis->hMget($key, $fields);
+			$res = $this->redis->hMget($key, $fields);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -170,7 +284,9 @@ class Redis
 	public function hGetAll($key)
 	{
 		try {
-			return $this->redis->hGetAll($key);
+			$res = $this->redis->hGetAll($key);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -181,7 +297,9 @@ class Redis
 	public function hGet($key, $field)
 	{
 		try {
-			return $this->redis->hGet($key, $field);
+			$res = $this->redis->hGet($key, $field);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -190,7 +308,9 @@ class Redis
 	public function hSet($key, $field, $value)
 	{
 		try {
-			return $this->redis->hSet($key, $field, $value);
+			$res = $this->redis->hSet($key, $field, $value);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -200,7 +320,9 @@ class Redis
 	public function rpush($key, $val)
 	{//往队列后边添加元素（右边），成功返回队列长度
 		try {
-			return $this->redis->rPush($key, $val);
+			$res = $this->redis->rPush($key, $val);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -209,7 +331,9 @@ class Redis
 	public function lSet($key, $posi, $val)
 	{
 		try {
-			return $this->redis->lSet($key, $val);
+			$res = $this->redis->lSet($key, $val);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -219,7 +343,9 @@ class Redis
 	public function lpop($key)
 	{//移出并返回队列的头元素
 		try {
-			return $this->redis->lPop($key);
+			$res = $this->redis->lPop($key);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -228,7 +354,9 @@ class Redis
 	public function lRange($key, $start, $stop)
 	{//返回指定位置的队列元素，如：key, 0, 4返回下标为0到4的队列值
 		try {
-			return $this->redis->lrange($key, $start, $stop);
+			$res = $this->redis->lrange($key, $start, $stop);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}
@@ -237,7 +365,9 @@ class Redis
 	public function lRemove($key, $val)
 	{//删除指定值
 		try {
-			return $this->redis->lRemove($key, $val);
+			$res = $this->redis->lRemove($key, $val);
+			$this->release();
+			return $res;
 		} catch (\RedisException $e) {
 			$this->dealErrorInfo($e);
 		}

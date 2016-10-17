@@ -35,7 +35,7 @@ if (! function_exists('app')) {
 if (! function_exists('serv')) {
 	function serv()
 	{
-		return $GLOBALS['__app__']->get('app.server');
+		return $GLOBALS['__app__']->make('app.server');
 	}
 }
 
@@ -48,14 +48,14 @@ if (! function_exists('serv')) {
 if (! function_exists('C')) {
 	function C($key, $default = null)
 	{
-		return $GLOBALS['__app__']->get('config')->get($key, $default);
+		return $GLOBALS['__app__']->make('config')->get($key, $default);
 	}
 }
 
 if (! function_exists('Q')) {
 	function Q($name = null)
 	{
-		return $GLOBALS['__app__']->get('query')->from($name);
+		return $GLOBALS['__app__']->make('query')->from($name);
 	}
 }
 
@@ -68,7 +68,7 @@ if (! function_exists('Q')) {
 if (! function_exists('A')) {
 	function A($name, $method = null, array $params = [])
 	{
-		return $GLOBALS['__app__']->get('controller.manager')->get($name);
+		return $GLOBALS['__app__']->make('controller.manager')->get($name);
 	}
 }
 
@@ -82,7 +82,7 @@ if (! function_exists('A')) {
 if (! function_exists('logger')) {
 	function logger($channelName = 'exception')
 	{
-		return $GLOBALS['__app__']->get('logger')->getChannel($channelName);
+		return $GLOBALS['__app__']->make('logger')->getChannel($channelName);
 	}
 }
 
@@ -134,7 +134,7 @@ if (! function_exists('env')) {
 if (! function_exists('http')) {
 	function http()
 	{
-		return $GLOBALS['__app__']->get('http.client');
+		return $GLOBALS['__app__']->make('http.client');
 	}
 }
 
@@ -144,7 +144,7 @@ if (! function_exists('http')) {
 if (! function_exists('pdo')) {
 	function pdo()
 	{
-		return $GLOBALS['__app__']->get('pdo');
+		return $GLOBALS['__app__']->make('pdo');
 	}
 }
 /**
@@ -153,7 +153,7 @@ if (! function_exists('pdo')) {
 if (! function_exists('redis')) {
 	function redis()
 	{
-		return $GLOBALS['__app__']->get('redis');
+		return $GLOBALS['__app__']->make('redis');
 	}
 }
 

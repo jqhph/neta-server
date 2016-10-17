@@ -114,13 +114,8 @@ class Base extends \NetaServer\Basis\Factory
 		return $this->get($channelName)->alert($msg, $extra);
 	}
 	
-	protected function getRequest() 
-	{
-		return $this->container->get('http.request');
-	}
-	
 	protected function getConfig() 
 	{
-		return $this->container->get('config');
+		return $this->container->make('config');
 	}
 }

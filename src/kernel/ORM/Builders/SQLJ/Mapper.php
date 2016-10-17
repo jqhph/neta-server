@@ -1,8 +1,8 @@
 <?php
-namespace Neta\ORM\Builders\SQLJ;
+namespace NetaServer\ORM\Builders\SQLJ;
 
-use \Neta\Exceptions\InternalServerError;
-use \Neta\Contracts\Mapper\MapperInterface;
+use \NetaServer\Exceptions\InternalServerError;
+use \NetaServer\Contracts\Mapper\MapperInterface;
 
 /**
  * 此sql构造器不会转译字段
@@ -39,7 +39,7 @@ class Mapper extends Base implements MapperInterface
 	
 	protected $limit;
 	
-	public function __construct(\Neta\Injection\Container $container) 
+	public function __construct(\NetaServer\Injection\Container $container)
 	{
 		$this->container = $container;
 	}

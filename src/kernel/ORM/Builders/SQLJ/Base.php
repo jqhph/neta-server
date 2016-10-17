@@ -1,5 +1,5 @@
 <?php
-namespace Neta\ORM\Builders\SQLJ;
+namespace NetaServer\ORM\Builders\SQLJ;
 
 class Base 
 {
@@ -108,6 +108,6 @@ class Base
 	
 	public function pdo() 
 	{
-		return $this->container->get('pdo');
+		return $this->container->make('pdo');
 	}
 }

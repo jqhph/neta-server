@@ -1,7 +1,7 @@
 <?php
-namespace Neta\ORM\Builders;
+namespace NetaServer\ORM\Builders;
 
-class MapperManager extends \Neta\Basis\Factory
+class MapperManager extends \NetaServer\Basis\Factory
 {
 	protected $defaultName = 'SQLJ';
 	/**
@@ -9,7 +9,7 @@ class MapperManager extends \Neta\Basis\Factory
 	 * */
 	public function create($name) 
 	{
-		$class = '\\Neta\\ORM\\Builders\\' . $name . '\\Mapper';
+		$class = '\\NetaServer\\ORM\\Builders\\' . $name . '\\Mapper';
 
 		return new $class($this->container);
 	}

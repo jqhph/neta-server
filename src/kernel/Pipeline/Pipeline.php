@@ -130,7 +130,7 @@ class Pipeline implements \NetaServer\Contracts\Pipeline\PipelineInterface
 		}
 		
 // 		elseif (is_string($pipe[0])) {
-// 			$pipe[0] = $this->container->get($pipe[0]);
+// 			$pipe[0] = $this->container->make($pipe[0]);
 				
 // 		}
 	}

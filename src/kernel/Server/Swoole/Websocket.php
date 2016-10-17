@@ -49,7 +49,7 @@ class Websocket extends Server
 
 			$this->workerServer()->onMessage($serv, $frame);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -58,7 +58,7 @@ class Websocket extends Server
 		try {
 			$this->workerServer()->onRequest($req, $resp);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -67,7 +67,7 @@ class Websocket extends Server
 		try {
 			$this->workerServer()->onOpen($serv, $req);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	

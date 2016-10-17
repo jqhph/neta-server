@@ -31,9 +31,9 @@ abstract class Server
     public function __construct(Container $container, $serverType)
     {
         $this->container         = $container;
-        $this->server            = $container->get('app.server');
+        $this->server            = $container->make('app.server');
         $this->serverType        = $serverType;
-        $this->controllerManager = $container->get('controller.manager');
+        $this->controllerManager = $container->make('controller.manager');
     }
 
     /**
@@ -56,57 +56,57 @@ abstract class Server
 
     }
 
-    public function onTask(\Swoole\Server $serv, $task_id, $from_id, $data)
+    public function onTask($serv, $task_id, $from_id, $data)
     {
 
     }
 
-    public function onPipeMessage(\Swoole\Server $serv, $from_worker_id, $message)
+    public function onPipeMessage($serv, $from_worker_id, $message)
     {
 
     }
 
-    public function onClose(\Swoole\Server $serv, $fd)
+    public function onClose($serv, $fd)
     {
 
     }
 
-    public function onWorkerStart(\Swoole\Server $serv, $worker_id)
+    public function onWorkerStart($serv, $worker_id)
     {
 
     }
 
-    public function onManagerStart(\Swoole\Server $serv)
+    public function onManagerStart($serv)
     {
 
     }
 
-    public function onManagerStop(\Swoole\Server $serv, $worker_id)
+    public function onManagerStop($serv, $worker_id)
     {
 
     }
 
-    public function onFinish(\Swoole\Server $serv, $data)
+    public function onFinish($serv, $data)
     {
 
     }
 
-    public function onStart(\Swoole\Server $serv)
+    public function onStart($serv)
     {
 
     }
 
-    public function onWorkerError(\Swoole\Server $serv, $worker_id, $worker_pid, $exit_code)
+    public function onWorkerError($serv, $worker_id, $worker_pid, $exit_code)
     {
 
     }
 
-    public function onWorkerStop(\Swoole\Server $serv, $worker_id)
+    public function onWorkerStop($serv, $worker_id)
     {
 
     }
 
-    public function onShutdown(\Swoole\Server $serv)
+    public function onShutdown($serv)
     {
 
     }

@@ -61,7 +61,7 @@ class Loader
 				'dependencies' => 'config'
 			],
 			'mapper.manager' => [
-				'class' => '\NetaServer\ORM\Mappers\MapperManager',
+				'class' => '\NetaServer\ORM\Builders\MapperManager',
 				'dependencies' => 'container'
 			],
 			'logger' => [
@@ -93,7 +93,9 @@ class Loader
 			'redis' => [
 				'class' => '\NetaServer\ORM\DB\Redis'
 			],
-
+			'mongo' => [
+				'class' => '\NetaServer\ORM\DB\Mongo'
+			],
 			'server.timer' => [
 				'class' => '\NetaServer\Server\Worker\Timer',
 				'dependencies' => 'container'
@@ -117,7 +119,8 @@ class Loader
 		$classInfo = $this->getServiceClass($abstract);
 
 		if (! isset($classInfo['class'])) {
-			throw new InternalServerError('找不到[' . $abstract . ']服务。');
+			return false;
+// 			throw new InternalServerError('找不到[' . $abstract . ']服务。');
 		}
 
 		$className = $classInfo['class'];///////////////////////////////////////////////////////////////////////
@@ -159,7 +162,7 @@ class Loader
 	 * */
 	protected function getDependencyInstance($alias)
 	{
-		return $this->container->get($alias);
+		return $this->container->make($alias);
 	}
 
 	/**
@@ -206,7 +209,8 @@ class Loader
 		$loadRules = $this->getLoadRules();
 
 		if (! isset($loadRules[$abstract])) {
-			throw new InternalServerError('找不到[' . $abstract . ']服务。');
+			return false;
+// 			throw new InternalServerError('找不到[' . $abstract . ']服务。');
 		}
 
 		return $loadRules[$abstract];
@@ -229,7 +233,7 @@ class Loader
 	public function getLoadRules()
 	{
 		if (! $this->isLoadConfig) {
-			$this->loadRule += (array) $this->container->get('config')->getInjectionConfig();
+			$this->loadRule += (array) $this->container->make('config')->getInjectionConfig();
 			$this->isLoadConfig = true;
 		}
 		return $this->loadRule;

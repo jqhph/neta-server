@@ -19,11 +19,15 @@ class Config
 	 * 注册服务容器规则文件路径
 	 * */
 	protected $regularInjectionFile = 'data/config/container.php';
+
+	protected $routeConfPath = 'data/config/route.yaml';# 路由规则配置文件
+
+	protected $routerRules = [];
 	
 	protected $confPathPre = 'data/config/';
 	
 	protected $confPaths = [//配置文件路径
-		'config'    => 'config.yaml',
+		'config' => 'config.yaml',
 	];
 	
 	public function __construct() 
@@ -58,21 +62,44 @@ class Config
 	}
 
 	/**
+	 * 获取路由规则
+	 * */
+	public function getRouterRules()
+	{
+		if (! $this->routerRules) {
+			$this->routerRules = $this->parseYAML($this->root . $this->routeConfPath);
+		}
+		return $this->routerRules;
+	}
+
+	/**
 	 * 读取配置文件
 	 * */
 	public function load()
 	{
 		$this->conf = [];
 
+		$pre = $this->root . $this->confPathPre;
+
 		foreach ($this->confPaths as $file) {
-			$filename = $this->root . $this->confPathPre .  $file;
+			$filename = $pre .  $file;
 			if (! is_file($filename)) {
-				warn("找不到[$filename]文件！");
+				warn("找不到配置文件[$filename]！");
 				exit;
 			}
 			$this->conf += $this->parseYAML($filename);
 		}
-		
+
+
+		$adds = (array) $this->get('add-config');
+		foreach ($adds as & $filename) {
+			$file = "{$pre}{$filename}.php";
+			if (! is_file($file)) {
+				warn("找不到配置文件[$filename]！");
+				exit;
+			}
+			$this->conf += include $file;
+		}
 		unset($config);
 	}
 	

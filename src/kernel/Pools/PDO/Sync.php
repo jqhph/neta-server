@@ -26,7 +26,7 @@ class Sync extends \NetaServer\Basis\Pool
             $pdo->query('set names ' . C('db.mysql.charset', 'utf8'));
             return $pdo;
         } catch(\PDOException $e) {
-            $this->container->get('exception.handler')->run($e);
+            $this->container->make('exception.handler')->run($e);
         }
     }
 }

@@ -48,6 +48,7 @@ abstract class Server
 	 * 所有进程共用的服务。需要在server start前注入
 	 * */
 	protected $publicService = [
+		'container',
 		'app.server', # $this
 		'pipeline.manager',
 		'mapper.manager',
@@ -58,6 +59,7 @@ abstract class Server
 		'server.timer',
 		'application', # \NetaServer\Application
 		'swoole.server', # \Swoole\Server
+		'neta.server',# $this
 	];
 
 	/**
@@ -69,11 +71,13 @@ abstract class Server
 	{
 		$this->container = $container;
 
+		$container->instance('neta.server', $this);
+
 		$this->serverType = $type;
 
 		# 初始化定时器
-		$container->get('server.timer')->init();
-
+		$container->make('server.timer')->init();
+		
 		$this->start();
 	}
 	
@@ -141,6 +145,9 @@ abstract class Server
 	{
 		try {
 			# 热加载[更新配置文件等信息] 清理所有服务
+			if (isset($this->workerServer()->publicService)) {
+				$this->publicService = array_merge($this->publicService, (array) $this->workerServer()->publicService);
+			}
 			$this->container->clear($this->publicService);
 
 			define('WORKER_ID', $serv->worker_id);
@@ -165,8 +172,8 @@ abstract class Server
 					info("Current server task worker memory limit is: ". ini_get('memory_limit'));
 				}
 
-				$processName = C('server.name') . ' server tasker num: ' . ($serv->worker_id - $workerNum) .
-						 ' time:' . date('Y-m-d H:i:s') . ' pid ' . $serv->worker_pid;
+				$processName = C('server.name') . ' tasker num:' . ($serv->worker_id - $workerNum) .
+						 ' [' . date('Y-m-d H:i:s') . '] pid:' . $serv->worker_pid;
 				# 进程命名
 				swoole_set_process_name($processName);
 
@@ -189,8 +196,8 @@ abstract class Server
 				info("Current server worker memory limit is: ". ini_get('memory_limit'));
 			}
 
-			$processName = C('server.name') . ' server worker num: ' . $serv->worker_id . ' time:'
-					. date('Y-m-d H:i:s') . ' pid ' . $serv->worker_pid;
+			$processName = C('server.name') . ' worker num:' . $serv->worker_id . ' ['
+					. date('Y-m-d H:i:s') . '] pid:' . $serv->worker_pid;
 
 			# 进程命名
 			swoole_set_process_name($processName);
@@ -214,7 +221,7 @@ abstract class Server
 				}
 			}
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -223,7 +230,7 @@ abstract class Server
 		try {
 			$this->workerServer()->onPipeMessage($serv, $from_worker_id, $message);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -232,7 +239,7 @@ abstract class Server
 		try {
 			$this->workerServer()->onManagerStart($serv);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -242,7 +249,7 @@ abstract class Server
 			logger('server')->error('manager进程异常退出！！worker_id: ' . $worker_id);
 			$this->workerServer()->onManagerStop($serv, $worker_id);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -251,7 +258,7 @@ abstract class Server
 		try {
 			$this->workerServer()->onFinish($serv, $data);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -260,7 +267,7 @@ abstract class Server
 		try {
 			$this->workerServer()->onTask($serv, $task_id, $from_id, $data);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -269,9 +276,9 @@ abstract class Server
 		try {
 			define('STARTED', 1);
 
-			$processName = C('server.name') . ' server running ' . C('server.host') . ':' . C('server.port')
-				. ' time:' . date('Y-m-d H:i:s') .
-				' master:' . $serv->master_pid;
+			$processName = C('server.name') . ' master ' . C('server.host') . ':' . C('server.port')
+				. ' [' . date('Y-m-d H:i:s') .
+				'] pid:' . $serv->master_pid;
 
 			swoole_set_process_name($processName);
 
@@ -284,7 +291,7 @@ abstract class Server
 
 			$this->workerServer()->onStart($serv);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -298,7 +305,7 @@ abstract class Server
 			logger('server')->error($msg);
 			$this->workerServer()->onWorkerError($serv, $worker_id, $worker_pid, $exit_code);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -309,16 +316,16 @@ abstract class Server
 			logger('server')->info($msg);
 			$this->workerServer()->onWorkerStop($serv, $worker_id);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
-	public function onClose(\Swoole\Server $serv, $fd)
+	public function onClose($serv, $fd)
 	{
 		try {
 			$this->workerServer()->onClose($serv, $fd);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 	
@@ -329,7 +336,7 @@ abstract class Server
 			logger('server')->info($msg);
 			$this->workerServer()->onShutdown($serv);
 		} catch (\Exception $e) {
-			$this->container->get('exception.handler')->run($e);
+			$this->container->make('exception.handler')->run($e);
 		}
 	}
 
@@ -358,8 +365,8 @@ abstract class Server
 	 * */
 	protected function inject()
 	{
-		$this->container->set('app.server', $this);
-		$this->container->set('swoole.server', $this->server);
+		$this->container->instance('app.server', $this);
+		$this->container->instance('swoole.server', $this->server);
 
 		foreach ($this->publicService as $alias) {
 			app($alias);
@@ -376,7 +383,7 @@ abstract class Server
 	{
 		if (! $this->workerServer) {
 			$this->workerServer = $this->createWorkerServer();
-			$this->container->set('worker.server', $this->workerServer);
+			$this->container->instance('worker.server', $this->workerServer);
 		}
 		return $this->workerServer;
 	}

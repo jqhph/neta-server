@@ -11,6 +11,8 @@ class Controller
 	 * */
 	protected $middleware = [];
 	
+	protected $dependencies;
+	
 	/**
 	 * 对象容器
 	 * */
@@ -27,7 +29,9 @@ class Controller
 	 * */
 	public function init()
 	{
-		
+		foreach ((array) $this->dependencies as $k => & $d) {
+			$this->{$k} = app($d);
+		}
 	}
 	
 	/**
@@ -39,7 +43,7 @@ class Controller
 	 * */
 	protected function model($name = null)
 	{
-		return $this->container->get('model.factory')->get($name ?: $this->name);
+		return $this->container->make('model.factory')->get($name ?: $this->name);
 	}
 	
 	/**
@@ -51,7 +55,7 @@ class Controller
 	 * */
 	protected function getConfig() 
 	{
-		return $this->container->get('config');
+		return $this->container->make('config');
 	}
 	
 	/**
@@ -65,7 +69,7 @@ class Controller
 	 * */
 	protected function query($name = null)
 	{
-		return $this->container->get('query')->from($name ?: $this->tableName);
+		return $this->container->make('query')->from($name ?: $this->tableName);
 	}
 	
 	/**
@@ -103,7 +107,7 @@ class Controller
 	 * */
 	protected function event($event, $payload = [], $halt = false)
 	{
-		return $this->container->get('events')->fire($event, $payload, $halt);
+		return $this->container->make('events')->fire($event, $payload, $halt);
 	}
 	
 	/**
@@ -116,7 +120,7 @@ class Controller
 	 * */
 	protected function listen($events, $listener, $priority = 0)
 	{
-		return $this->container->get('events')->listen($events, $listener, $priority);
+		return $this->container->make('events')->listen($events, $listener, $priority);
 	}
 	
 	/**
@@ -124,7 +128,7 @@ class Controller
 	 * */
 	protected function logger() 
 	{
-		return $this->container->get('logger');
+		return $this->container->make('logger');
 	}
 	
 	/**
@@ -144,7 +148,7 @@ class Controller
 	 * */
 	protected function getHttpClient() 
 	{
-		return $this->container->get('http.client');
+		return $this->container->make('http.client');
 	}
 	
 	public function setContainer(Container $container)
@@ -164,7 +168,7 @@ class Controller
 	 * */
 	protected function cache() 
 	{
-		return $this->container->get('cache.factory')->get();
+		return $this->container->make('cache.factory')->get();
 	}
 	
 	protected function getContainer() 

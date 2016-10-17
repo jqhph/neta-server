@@ -12,7 +12,7 @@ namespace NetaServer\Server\Worker;
 class Websocket extends Server
 {
 
-    public function onOpen(\Swoole\Server $serv, \Swoole\Http\Request $req)
+    public function onOpen($serv, \Swoole\Http\Request $req)
     {
 
     }

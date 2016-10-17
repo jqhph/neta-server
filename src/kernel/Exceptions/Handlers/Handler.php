@@ -19,7 +19,8 @@ class Handler
 	
 	protected $exceptionClasses = [
 		'\PDOException' => 'db', 
-		'\RedisException' => 'db', 
+		'\RedisException' => 'db',
+		'\MongoException' => 'db',
 		'\NetaServer\Exceptions\Exception' => 'app'
 	];
 	
@@ -29,8 +30,8 @@ class Handler
 	
 	public function __construct(Container $container) 
 	{
-		$this->config   = $container->get('config');
-		$this->logger   = $container->get('logger');
+		$this->config   = $container->make('config');
+		$this->logger   = $container->make('logger');
 		
 		$this->logConfig = $this->config->get('log');
 	}

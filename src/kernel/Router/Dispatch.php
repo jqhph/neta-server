@@ -21,18 +21,21 @@ class Dispatch
 	
 	//路由解析结果
 	protected $matchResult;
+
+	protected $requestMethod;
+
+	protected $requestUri;
 	
 	protected $uriarr;
 	
 // 	protected $originalController;
 // 	protected $originalAction;
 	
-	protected $controllerName;//控制器名称
-	protected $actionName;//action名称
-	protected $auth;//接口验证相关配置信息
-	protected $requestParams;//其余参数
+	public $controllerName;//控制器名称
+	public $actionName;//action名称
+	public $auth;//接口验证相关配置信息
+	public $requestParams;//其余参数
 	
-	const HOME 	   = 'HOME';
 	const APP	   = 'APP';
 	const NOTFOUND = 404;
 	
@@ -41,14 +44,17 @@ class Dispatch
 		$this->container = $container;
 	}
 	
-	public function run() 
+	public function run(\Swoole\Http\Request $req, \Swoole\Http\Response $resp)
 	{
-		$this->container->get('events')->fire('route.run.before', [$this, $this->getRequest()]);
+		$this->requestMethod = Arr::getValue($req->server, 'request_method');
+		$this->requestUri    = Arr::getValue($req->server, 'request_uri');
+
+		$this->container->make('events')->fire('route.run.before', [$req, $resp]);
 		
 		//解析路由
 		$this->setMatchResult($this->matchRouteRule());
 		
-		$this->afterMatch();
+		$this->afterMatch($req, $resp);
 		
 		return $this;
 	}
@@ -56,7 +62,7 @@ class Dispatch
 	/**
 	 * 匹配后置方法
 	 * */
-	protected function afterMatch()
+	protected function afterMatch($req, $resp)
 	{
 		if ($this->matchResult !== self::APP) {
 			return;
@@ -65,7 +71,7 @@ class Dispatch
 		$this->hooks['before'] = Arr::getValue($this->hooks, 'before', []);
 		$this->hooks['after']  = Arr::getValue($this->hooks, 'after', []);
 
-		$events = $this->container->get('events');
+		$events = $this->container->make('events');
 		
 		//注册钩子
 		foreach ((array) $this->hooks['before'] as & $hook) {
@@ -78,13 +84,13 @@ class Dispatch
 			$events->listen('route.auth.after', $hook);
 		}
 		
-		$events->fire('route.run.after', [$this, $this->getRequest()]);
+		$events->fire('route.run.after', [$req, $resp]);
 	}
 	
 	//解析路由
 	protected function matchRouteRule() 
 	{
-		$uri = $this->getRequest()->getRequestURI();
+		$uri = $this->requestUri;
 		
 		$uriarr = explode('/', $uri);
 		$this->arrayFilter($uriarr);
@@ -100,14 +106,6 @@ class Dispatch
 			}
 		}
 		
-		if ($uri == '/') {
-			if ($this->getRequest()->isGET()) {//加载客户端
-				return self::HOME;
-			}
-				
-			return self::NOTFOUND;
-		}
-		
 		return self::NOTFOUND;
 	}
 	
@@ -117,12 +115,6 @@ class Dispatch
 			return false;
 		}
 		
-		if (! isset($rule['auth'])) {
-			$rule['auth'] = '';
-		}
-		//接口验证
-		$auth = & $rule['auth'];
-			
 		$method 	   = strtoupper(Arr::getValue($rule, 'method', 'GET'));
 		$rule['route'] = explode('/', $rule['route']);
 		
@@ -142,8 +134,20 @@ class Dispatch
 		if (! $matching) {
 			return false;	
 		}
-		
+
 		//匹配成功
+
+		if (! isset($rule['auth'])) {
+			$rule['auth'] = '';
+		}
+		//接口验证
+		$auth = (array) $rule['auth'];
+
+		if (! isset($auth['enable'])) {
+			$auth['enable'] = true;
+		}
+		$auth['class'] = isset($auth['class']) ? $auth['class'] : 'Auth';
+
 		$contr = $action = '';
 		
 		$params = [];//参数
@@ -201,32 +205,12 @@ class Dispatch
 			}
 		}
 		
-		$this->controllerName = & $realContr;
-		$this->actionName	   = & $realAction;
-		$this->auth		   = & $auth;
+		$this->controllerName = $realContr ?: 'Index';
+		$this->actionName	  = $realAction ?: 'Index';
+		$this->auth		      = & $auth;
 		$this->requestParams  = & $params;
 		
 		return true;
-	}
-	
-	public function getControllerName() 
-	{
-		return $this->controllerName;
-	}
-	
-	public function getActionName() 
-	{
-		return $this->actionName;
-	}
-	
-	public function getAuthParams() 
-	{
-		return $this->auth;
-	}
-	
-	public function getRequestParams() 
-	{
-		return $this->requestParams;
 	}
 	
 	public function getUri() 
@@ -266,17 +250,17 @@ class Dispatch
 	
 	protected function getRequest() 
 	{
-		return $this->container->get('http.request');
+		return $this->container->make('http.request');
 	}
 	
 	protected function getConfig()
 	{
-		return $this->container->get('config');
+		return $this->container->make('config');
 	}
 
 	protected function getHttpMethod() 
 	{
-		return $this->getRequest()->getMethod();
+		return $this->requestMethod;
 	}
 	
 }

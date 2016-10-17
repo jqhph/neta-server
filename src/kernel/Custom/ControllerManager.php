@@ -24,6 +24,7 @@ class ControllerManager extends \NetaServer\Basis\Factory
 			$instance = new $className();
 			$instance->setContainer($this->container);
 			$instance->setControllerName($name);
+			$instance->init();
 			
 			return $instance;
 		} else {

@@ -1,8 +1,8 @@
 <?php
-namespace Neta\ORM;
+namespace NetaServer\ORM;
 
-use \Neta\ORM\Builders\MapperManager;
-use \Neta\Injection\Container;
+use \NetaServer\ORM\Builders\MapperManager;
+use \NetaServer\Injection\Container;
 
 
 /**

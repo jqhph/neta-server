@@ -28,7 +28,7 @@ class Application
 
 		$this->container = app();
 
-		$this->container->set('application', $this);
+		$this->container->instance('application', $this);
 
 		$this->regist();
 
@@ -40,7 +40,7 @@ class Application
 	public function regist()
 	{
 		# 异常捕获, 此函数对swoole事件回调方法无效
-		set_exception_handler([$this->container->get('exception.handler'), 'run']);
+		set_exception_handler([$this->container->make('exception.handler'), 'run']);
 		# 注册错误处理事件
 		set_error_handler([$this, 'errorHandle']);
 		# 注册进程退出监控事件

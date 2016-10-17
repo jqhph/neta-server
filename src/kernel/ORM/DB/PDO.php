@@ -21,6 +21,8 @@ class PDO
 	private $pdo;		//PDO实例化对象
 	
 	protected $config;
+	# 是否启用连接池
+	protected $usepool;
 	
 	# 是否开启debug模式
 	protected $debug;
@@ -30,19 +32,17 @@ class PDO
 	 * @param array $arr   = array() 连接数据库信息数组
 	 * @param bool  $error = true    true开启异常处理模式,false关闭异常处理模式
 	 */
-	public function __construct(Config $config, array $dbConfig = null) 
+	public function __construct(array $dbConfig = null)
 	{
-		$this->config = $config;
-		
-		$this->debug = $config->get('profiling.debug');
-		
 		if ($dbConfig == null) {
-			$dbConfig = $config->get('db.mysql');
+			$dbConfig = C('db.mysql');
 		}
 		
 		if (! $dbConfig) {
 			throw new InternalServerError('DB CONFIG NOT FOUND');
 		}
+
+		$this->usepool = Arr::get($dbConfig, 'usepool');
 		
 		$this->db_type = Arr::get($dbConfig, 'type', 'mysql');
 		$this->host    = Arr::get($dbConfig, 'host');
@@ -69,12 +69,23 @@ class PDO
 		try {
 			$dsn = "{$this->db_type}:host={$this->host};port={$this->port};dbname={$this->dbname};charset={$this->charset}";
 
-			$this->pdo = new \PDO($dsn, $this->user, $this->pass);
+			if ($this->usepool) {
+				$this->pdo = new \pdoProxy($dsn, $this->user, $this->pass);
+			} else {
+				$this->pdo = new \PDO($dsn, $this->user, $this->pass);
+			}
 
 			$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);//开启异常处理
 			return $this->pdo;
 		} catch (\PDOException $e) {
 			return $this->dealErrorInfo($e);
+		}
+	}
+
+	public function release()
+	{
+		if ($this->usepool) {
+			$this->pdo->release();
 		}
 	}
 //--------------------------------------------------------------
@@ -86,7 +97,9 @@ class PDO
  	public function exec($command)
 	{
 		try {
-			return $this->pdo->exec($command);;
+			$res = $this->pdo->exec($command);
+			$this->release();
+			return $res;
 		} catch (\PDOException $e) {
 			return $this->dealExecption($command, 'exec', $e);
 		}
@@ -95,7 +108,9 @@ class PDO
 	public function query($sql)
 	{
 		try {
-			return $this->pdo->query($sql);;
+			$res = $this->pdo->query($sql);;
+			$this->release();
+			return $res;
 		} catch (\PDOException $e) {
 			return $this->dealExecption($sql, 'query', $e);
 		}
@@ -180,6 +195,7 @@ class PDO
 		try {
 			$stmt = $this->pdo->prepare($sql);
 
+			$this->release();
 			if (! $stmt) {
 				return false;
 			}
@@ -312,7 +328,9 @@ class PDO
 		} else {
 			//一次重连失败，再重连一次
 			if ($this->dbConnect()) {
-				return $this->pdo->$fun($sql);
+				$res = $this->pdo->$fun($sql);
+				$this->release();
+				return $res;
 			}else {//再重连失败
 				//错误处理
 				$this->dealErrorInfo($e);
