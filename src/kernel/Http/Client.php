@@ -372,6 +372,8 @@ class Client
         
         curl_setopt_array($ch, $options);
         
+        $this->response = [];
+        
         $this->response['output'] = curl_exec($ch);
         
         $this->response['info'] = curl_getinfo($ch);
@@ -385,6 +387,8 @@ class Client
         curl_close($ch);
         //$output = substr($output, 10);
         //$output = gzinflate($output);
+        
+        $this->reset();
        
         return $this->response['output'];
         

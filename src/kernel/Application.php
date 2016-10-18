@@ -167,7 +167,7 @@ class Application
 						$log .= '[QUERY] ' . $_SERVER['REQUEST_URI'];
 					}
 
-					logger('exception')->error($log);
+					logger('exception')->error("$log in $file($line)");
 					break;
 				default:
 					break;

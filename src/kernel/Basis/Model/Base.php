@@ -178,7 +178,7 @@ class Base extends \NetaServer\ORM\Entity
 
 	protected function cache()
 	{
-		return $this->__container->make('cache.factory')->get();
+		return redis();
 	}
 
 	protected function logger()
