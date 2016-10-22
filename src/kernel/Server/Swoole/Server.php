@@ -51,7 +51,7 @@ abstract class Server
 		'container',
 		'app.server', # $this
 		'pipeline.manager',
-		'mapper.manager',
+		'builder.manager',
 		'exception.handler',
 		'model.factory',
 		'debug',
@@ -243,10 +243,10 @@ abstract class Server
 		}
 	}
 	
-	public function onManagerStop(\Swoole\Server $serv, $worker_id)
+	public function onManagerStop(\Swoole\Server $serv, $worker_id = null)
 	{
 		try {
-			logger('server')->error('manager进程异常退出！！worker_id: ' . $worker_id);
+			logger('server')->error('manager进程异常退出');
 			$this->workerServer()->onManagerStop($serv, $worker_id);
 		} catch (\Exception $e) {
 			$this->container->make('exception.handler')->run($e);
@@ -299,8 +299,7 @@ abstract class Server
 	public function onWorkerError(\Swoole\Server $serv, $worker_id, $worker_pid, $exit_code)
 	{
 		try {
-			$msg = 'worker进程异常退出！！worker_id: ' . $worker_id
-					. '; worker_pid: ' . $worker_pid . '; exit_code: ' . $exit_code;
+			$msg = "worker进程异常退出！worker_id: $worker_id; worker_pid: $worker_pid; exit_code: $exit_code";
 
 			logger('server')->error($msg);
 			$this->workerServer()->onWorkerError($serv, $worker_id, $worker_pid, $exit_code);

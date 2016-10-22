@@ -50,7 +50,18 @@ class Logger extends \NetaServer\Utils\Log\Base
 
 		$addRecordMethod = 'error';
 		
-		$channel->error($msg .' [' . $file . '(' . $line . ')]');
+		$msg = "$msg [$file($line)]";
+		
+		$channel->error($msg);
+		
+		$this->displayError($msg);
+	}
+	
+	protected function displayError($msg)
+	{
+		if (! defined('STARTED')) {
+			error($msg);
+		}
 	}
 	
 	/**
@@ -73,8 +84,12 @@ class Logger extends \NetaServer\Utils\Log\Base
 		if (isset($this->levels[$level])) {
 			$addRecordMethod = $this->levels[$level];
 		}
+		
+		$msg = "$msg [$file($line)]";
 
-		$channel->$addRecordMethod($msg .' [' . $file . '(' . $line . ')]');
+		$channel->$addRecordMethod($msg);
+		
+		$this->displayError($msg);
 	}
 	
 	/**

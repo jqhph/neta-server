@@ -22,7 +22,7 @@ class Application
 
 		define('JQH_START', microtime(true));
 
-		info("\e[36m=====================启动服务...=====================\e[39m");
+		info("\e[36m=================================启动服务...=================================\e[39m");
 
 		$this->checkDependencies();
 
@@ -77,32 +77,32 @@ class Application
 	protected function checkDependencies()
 	{
 		if (! defined('SWOOLE_VERSION')) {
-			warn('请先安装swoole扩展, 详见 http://www.swoole.com/');
+			error('请先安装swoole扩展, 详见 http://www.swoole.com/');
 			exit;
 		}
 
 		if (version_compare(SWOOLE_VERSION, '1.8.0', '<')) {
-			warn('swoole扩展必须>=1.8版本');
+			error('swoole扩展必须>=1.8版本');
 			exit;
 		}
 
 		if (! class_exists('\\Swoole\\Server')) {
-			warn('你没有开启 swoole 的命名空间模式, 请在 php.ini 文件增加 swoole.use_namespace = true 参数. [执行 php --ini 命令可以查看 php.ini 位置]');
+			error('你没有开启 swoole 的命名空间模式, 请在 php.ini 文件增加 swoole.use_namespace = true 参数. [执行 php --ini 命令可以查看 php.ini 位置]');
 			exit;
 		}
 
 		if (! function_exists('msgpack_pack')) {
-			warn('请先安装msgpack扩展, 下载地址: https://pecl.php.net/package/msgpack');
+			error('请先安装msgpack扩展, 下载地址: https://pecl.php.net/package/msgpack');
 			exit;
 		}
 
 		if (! class_exists('\Redis')) {
-			warn('请先安装redis扩展, 下载地址: https://pecl.php.net/package/redis');
+			error('请先安装redis扩展, 下载地址: https://pecl.php.net/package/redis');
 			exit;
 		}
 
 		if (! class_exists('\Spyc')) {
-			warn('请先安装spyc类库');
+			error('请先安装spyc类库');
 			exit;
 		}
 	}
@@ -132,12 +132,6 @@ class Application
 
 	}
 	
-	
-	public function end()
-	{
-
-	}
-
 	/**
 	 * 检查进程出错原因.
 	 *
@@ -147,31 +141,38 @@ class Application
 	{
 		$log = '当前进程异常退出！';
 		$error = error_get_last();
-		if (isset($error['type'])) {
-			switch ($error['type']) {
-				case E_ERROR :
-				case E_PARSE :
-				case E_CORE_ERROR :
-				case E_COMPILE_ERROR :
-					$message = $error['message'];
-					$file = $error['file'];
-					$line = $error['line'];
+		if (! isset($error['type'])) {
+			return false;
+		}
+		switch ($error['type']) {
+			case E_ERROR :
+			case E_PARSE :
+			case E_CORE_ERROR :
+			case E_COMPILE_ERROR :
+				$message = $error['message'];
+				$file = $error['file'];
+				$line = $error['line'];
 
-					$pos = strpos($message, 'Stack trace:');
-					if ($pos !== false) {
-						$message = substr($message, 0, $pos);
-					}
-					$log .= $message;//"$message [$file($line)]";
+				$pos = strpos($message, 'Stack trace:');
+				if ($pos !== false) {
+					$message = substr($message, 0, $pos);
+				}
+				$log .= $message;//"$message [$file($line)]";
 
-					if (isset($_SERVER['REQUEST_URI'])) {
-						$log .= '[QUERY] ' . $_SERVER['REQUEST_URI'];
-					}
+				if (isset($_SERVER['REQUEST_URI'])) {
+					$log .= '[QUERY] ' . $_SERVER['REQUEST_URI'];
+				}
+				
+				$log = "$log [$file($line)]";
+				
+				if (! defined('STARTED')) {
+					error($log);
+				}
 
-					logger('exception')->error("$log in $file($line)");
-					break;
-				default:
-					break;
-			}
+				logger('exception')->error($log);
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -180,11 +181,11 @@ class Application
 	 * */
 	public function errorHandle($code, $msg, $file, $line, $symbols)
 	{
-		$msg = 'PHP.' . $msg . ' [' . $file . '(' . $line . ')]';;
+		$msg = "PHP.$msg [$file($line)]";
 
 		logger('exception')->error($msg);
 
-		if (! defined('WORKER_ID')) {
+		if (! defined('STARTED')) {
 			warn($msg);
 		}
 	}

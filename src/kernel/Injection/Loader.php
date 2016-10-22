@@ -35,7 +35,7 @@ class Loader
 			],
 			'query' => [
 				'class' => '\NetaServer\ORM\Query',
-				'dependencies' => ['mapper.manager', 'container']	
+				'dependencies' => ['builder.manager', 'container']	
 			],
 			'router' => [
 				'class' => '\NetaServer\Router\Dispatch',
@@ -60,8 +60,8 @@ class Loader
 				'class' => '\NetaServer\Utils\PasswordHash',
 				'dependencies' => 'config'
 			],
-			'mapper.manager' => [
-				'class' => '\NetaServer\ORM\Builders\MapperManager',
+			'builder.manager' => [
+				'class' => '\NetaServer\ORM\Builders\BuilderManager',
 				'dependencies' => 'container'
 			],
 			'logger' => [
@@ -94,7 +94,7 @@ class Loader
 				'class' => '\NetaServer\ORM\DB\Redis'
 			],
 			'mongo' => [
-				'class' => '\NetaServer\ORM\DB\Mongo'
+				'class' => '\NetaServer\ORM\DB\Mongo\Connection'
 			],
 			'server.timer' => [
 				'class' => '\NetaServer\Server\Worker\Timer',

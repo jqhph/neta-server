@@ -8,7 +8,7 @@ class Base extends \NetaServer\ORM\Entity
 	/**
 	 * 查询某条数据是否存在
 	 * */
-	final public function exists($id = null)
+	final public function exist($id = null)
 	{
 		$this->__id = $id ?: $this->__id;
 		if (! $this->__id) {

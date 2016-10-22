@@ -197,6 +197,17 @@ if (! function_exists('warn')) {
 	}
 }
 
+if (! function_exists('error')) {
+	function error($info)
+	{
+		$beg = "\x1b[31m";
+		$end = "\x1b[39m";
+		$str = $beg . date('[Y-m-d H:i:s]') . "[error]{$end} - " . $info . "\n";
+
+		echo $str;
+	}
+}
+
 /**
  * 调试函数
  * */
