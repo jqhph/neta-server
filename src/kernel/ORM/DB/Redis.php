@@ -176,16 +176,6 @@ class Redis
 		}
 	}
 
-	public function sRem($key, $val)
-	{
-		try {
-			$res = $this->redis->sRem($key, $val);
-			$this->release();
-			return $res;
-		} catch (\RedisException $e) {
-			$this->dealErrorInfo($e);
-		}
-	}
 	//是否存在
 	public function sIsMember($key, $val)
 	{
@@ -208,11 +198,24 @@ class Redis
 			$this->dealErrorInfo($e);
 		}
 	}
+	
+    //删除成员
+	public function sRem($key, $v)
+	{
+	   try {
+			$res = $this->redis->sRem($key, $v);
+			$this->release();
+			return $res;
+		} catch (\RedisException $e) {
+			$this->dealErrorInfo($e);
+		}
+	}
+	
 	//随机返回一个成员并删除
-	public function sPop($key)
+	public function sPop()
 	{
 		try {
-			$res = $this->redis->sPop($key);
+			$res = $this->redis->sPop();
 			$this->release();
 			return $res;
 		} catch (\RedisException $e) {

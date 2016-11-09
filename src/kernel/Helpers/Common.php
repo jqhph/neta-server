@@ -21,10 +21,10 @@ $GLOBALS['__app__'] = Container::getInstance();
  * @return instance
  * */
 if (! function_exists('app')) {
-	function app($abstract = null)
-	{
-		return $abstract ? $GLOBALS['__app__']->make($abstract) : $GLOBALS['__app__'];
-	}
+    function app($abstract = null)
+    {
+        return $abstract ? $GLOBALS['__app__']->make($abstract) : $GLOBALS['__app__'];
+    }
 }
 
 /**
@@ -33,10 +33,10 @@ if (! function_exists('app')) {
  * @return \Server\Swoole\Server
  * */
 if (! function_exists('serv')) {
-	function serv()
-	{
-		return $GLOBALS['__app__']->make('app.server');
-	}
+    function serv()
+    {
+        return $GLOBALS['__app__']->make('app.server');
+    }
 }
 
 /**
@@ -46,17 +46,17 @@ if (! function_exists('serv')) {
  * @param string|array|null $default 默认值
  * */
 if (! function_exists('C')) {
-	function C($key, $default = null)
-	{
-		return $GLOBALS['__app__']->make('config')->get($key, $default);
-	}
+    function C($key, $default = null)
+    {
+        return $GLOBALS['__app__']->make('config')->get($key, $default);
+    }
 }
 
 if (! function_exists('Q')) {
-	function Q($name = null)
-	{
-		return $GLOBALS['__app__']->make('query')->from($name);
-	}
+    function Q($name = null)
+    {
+        return $GLOBALS['__app__']->make('query')->from($name);
+    }
 }
 
 /**
@@ -66,10 +66,10 @@ if (! function_exists('Q')) {
  * @return mixed
  * */
 if (! function_exists('A')) {
-	function A($name, $method = null, array $params = [])
-	{
-		return $GLOBALS['__app__']->make('controller.manager')->get($name);
-	}
+    function A($name, $method = null, array $params = [])
+    {
+        return $GLOBALS['__app__']->make('controller.manager')->get($name);
+    }
 }
 
 
@@ -80,10 +80,10 @@ if (! function_exists('A')) {
  * @return instance
  * */
 if (! function_exists('logger')) {
-	function logger($channelName = 'exception')
-	{
-		return $GLOBALS['__app__']->make('logger')->getChannel($channelName);
-	}
+    function logger($channelName = 'exception')
+    {
+        return $GLOBALS['__app__']->make('logger')->getChannel($channelName);
+    }
 }
 
 /**
@@ -94,134 +94,145 @@ if (! function_exists('logger')) {
  * @return mixed
  */
 if (! function_exists('env')) {
-	function env($key, $default = null)
-	{
-		$value = getenv($key);
-
-		if ($value === false) {
-			return $default;
-		}
-
-		switch (strtolower($value)) {
-			case 'true':
-			case '(true)':
-				return true;
-
-			case 'false':
-			case '(false)':
-				return false;
-
-			case 'empty':
-			case '(empty)':
-				return '';
-
-			case 'null':
-			case '(null)':
-				return;
-		}
-
-		if (strlen($value) > 1 && Str::startsWith($value, '"') && Str::endsWith($value, '"')) {
-			return substr($value, 1, -1);
-		}
-
-		return $value;
-	}
+    function env($key, $default = null)
+    {
+        $value = getenv($key);
+        
+        if ($value === false) {
+        	return $default;
+        }
+        
+        switch (strtolower($value)) {
+            case 'true':
+            case '(true)':
+                return true;
+            
+            case 'false':
+            case '(false)':
+                return false;
+            
+            case 'empty':
+            case '(empty)':
+                return '';
+            
+            case 'null':
+            case '(null)':
+                return;
+        }
+        
+        if (strlen($value) > 1 && Str::startsWith($value, '"') && Str::endsWith($value, '"')) {
+            return substr($value, 1, -1);
+        }
+        
+        return $value;
+    }
 }
 
 /**
  * 获取http客户端方法
  * */
 if (! function_exists('http')) {
-	function http()
-	{
-		return $GLOBALS['__app__']->make('http.client');
-	}
+    function http()
+    {
+        return $GLOBALS['__app__']->make('http.client');
+    }
 }
 
 /**
  * 获取pdo, 每个进程持有不同的数据库连接
  * */
 if (! function_exists('pdo')) {
-	function pdo()
-	{
-		return $GLOBALS['__app__']->make('pdo');
-	}
+    function pdo()
+    {
+        return $GLOBALS['__app__']->make('pdo');
+    }
 }
 /**
  * 获取redis
  * */
 if (! function_exists('redis')) {
-	function redis()
-	{
-		return $GLOBALS['__app__']->make('redis');
-	}
+    function redis()
+    {
+        return $GLOBALS['__app__']->make('redis');
+    }
 }
 
 /**
  * 驼峰命名转化为下划线命名
  * */
 if (! function_exists('get_db_field')) {
-	function get_db_field($str)
-	{
-		$str = preg_replace_callback('/([A-Z])/', 'to_db_field', $str);
-		return trim($str, '_');
-	}
+    function get_db_field($str)
+    {
+        $str = preg_replace_callback('/([A-Z])/', 'to_db_field', $str);
+        return trim($str, '_');
+    }
 }
 
 if (! function_exists('to_db_field')) {
-	function to_db_field(& $text)
-	{
-		return '_' . strtolower($text[1]);
-	}
+    function to_db_field(& $text)
+    {
+        return '_' . strtolower($text[1]);
+    }
 }
 
 if (! function_exists('info')) {
-	function info($info)
-	{
-		$beg = "\x1b[33m";
-		$end = "\x1b[39m";
-		$str = $beg . date('[Y-m-d H:i:s]') . "{$end} - " . $info . "\n";
-
-		echo $str;
-	}
+    function info($info)
+    {
+        $beg = "\x1b[33m";
+        $end = "\x1b[39m";
+        $str = $beg . date('[Y-m-d H:i:s]') . "{$end} - " . $info . "\n";
+        
+        echo $str;
+    }
 }
 
 if (! function_exists('warn')) {
-	function warn($info)
-	{
-		$beg = "\x1b[31m";
-		$end = "\x1b[39m";
-		$str = $beg . date('[Y-m-d H:i:s]') . "[warn]{$end} - " . $info . "\n";
+    function warn($info)
+    {
+        $beg = "\x1b[31m";
+        $end = "\x1b[39m";
+        $str = $beg . date('[Y-m-d H:i:s]') . "[warn]{$end} - " . $info . "\n";
+        
+        echo $str;
+    }
+}
 
-		echo $str;
-	}
+if (! function_exists('error')) {
+    function error($info)
+    {
+        $beg = "\x1b[31m";
+        $end = "\x1b[39m";
+        $str = $beg . date('[Y-m-d H:i:s]') . "[error]{$end} - " . $info . "\n";
+        
+        echo $str;
+    }
 }
 
 /**
  * 调试函数
  * */
 if (! function_exists('debug')) {
-	function debug($data, $json = false)
-	{
-		if (is_string($data) || is_integer($data) || is_bool($data)) {
-			echo date('[H:i:s]') . " $data\n";
-		} elseif (is_array($data)) {
-			if ($json) {
-				return debug(json_encode($data));
-			}
-			print_r($data);
-			echo "\n\n";
-		} else {
-			return debug(json_encode($data));
-		}
-	}
+    function debug($data, $json = false)
+    {
+        if (is_string($data) || is_integer($data) || is_bool($data)) {
+            echo date('[H:i:s]') . " $data\n";
+        } elseif (is_array($data)) {
+            if ($json) {
+                return debug(json_encode($data));
+            }
+            print_r($data);
+            echo "\n\n";
+        } else {
+            return debug(json_encode($data));
+        }
+    }
 }
 # 换行
 if (! function_exists('nl')) {
-	function nl($num = 1)
-	{
-		for ($i = 0; $i <= 1; $i++) {
-			echo "\n";
-		}
-	}
+    function nl($num = 1)
+    {
+        for ($i = 0; $i <= 1; $i++) {
+            echo "\n";
+        }
+    }
 }

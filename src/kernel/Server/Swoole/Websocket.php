@@ -18,80 +18,80 @@ class Websocket extends Server
 	 * */
 	protected $incompleteData;
 	
-	protected function create()
-	{
-		$host = C('server.host', '0.0.0.0');
-		$port = C('server.port', 9588);
-
-		info("host: $host, port: $port");
-
-		$this->server = new WS($host, $port);
-		$this->server->set(C('server.set'));
-	}
+    protected function create()
+    {
+        $host = C('server.host', '0.0.0.0');
+        $port = C('server.port', 9588);
+        
+        info("host: $host, port: $port");
+        
+        $this->server = new WS($host, $port);
+        $this->server->set(C('server.set'));
+    }
 	
 	protected function bind()
 	{
-		parent::bind();
-		$this->server->on('Open',    [$this, 'onOpen']);
-		$this->server->on('Request', [$this, 'onRequest']);
-		$this->server->on('Message', [$this, 'onMessage']);
+        parent::bind();
+        $this->server->on('Open',    [$this, 'onOpen']);
+        $this->server->on('Request', [$this, 'onRequest']);
+        $this->server->on('Message', [$this, 'onMessage']);
 	}
 	
-	public function onMessage(WS $serv, \Swoole\Websocket\Frame $frame)
-	{
-		try {
-			# 拼接数据包
-			$this->setup($frame);
-			# finish != 1 表示数据包不完整
-			if ($frame->finish != 1) {
-				return false;
-			}
-
-			$this->workerServer()->onMessage($serv, $frame);
-		} catch (\Exception $e) {
-			$this->container->make('exception.handler')->run($e);
-		}
-	}
+    public function onMessage(WS $serv, \Swoole\Websocket\Frame $frame)
+    {
+        try {
+            # 拼接数据包
+            $this->setup($frame);
+            # finish != 1 表示数据包不完整
+            if ($frame->finish != 1) {
+            	return false;
+            }
+            
+            $this->workerServer()->onMessage($serv, $frame);
+        } catch (\Exception $e) {
+            $this->container->make('exception.handler')->run($e);
+        }
+    }
 	
-	public function onRequest(\Swoole\Http\Request $req, \Swoole\Http\Response $resp)
-	{
-		try {
-			$this->workerServer()->onRequest($req, $resp);
-		} catch (\Exception $e) {
-			$this->container->make('exception.handler')->run($e);
-		}
-	}
+    public function onRequest(\Swoole\Http\Request $req, \Swoole\Http\Response $resp)
+    {
+        try {
+            $this->workerServer()->onRequest($req, $resp);
+        } catch (\Exception $e) {
+            $this->container->make('exception.handler')->run($e);
+        }
+    }
 	
-	public function onOpen(\Swoole\Server $serv, \Swoole\Http\Request $req)
-	{
-		try {
-			$this->workerServer()->onOpen($serv, $req);
-		} catch (\Exception $e) {
-			$this->container->make('exception.handler')->run($e);
-		}
-	}
+    public function onOpen(\Swoole\Server $serv, \Swoole\Http\Request $req)
+    {
+        try {
+            $this->workerServer()->onOpen($serv, $req);
+        } catch (\Exception $e) {
+            $this->container->make('exception.handler')->run($e);
+        }
+    }
 	
 	/**
 	 * 拼接完整数据包
 	 * */
-	protected function setup(\Swoole\Websocket\Frame $frame)
-	{
-		$fd = $frame->fd;
-		if ($frame->finish != 1) {
-			if (! isset($this->incompleteData[$fd])) {
-				$this->incompleteData[$fd] = [$frame->data];
-			} else {
-				array_push($this->incompleteData[$fd], $frame->data);
-			}
-		} else {
-			if (! isset($this->incompleteData[$fd])) {
-				return;
-			}
-			if (count($this->incompleteData[$fd]) > 0) {
-				$frame->data = implode('', $this->incompleteData[$fd]) . $frame->data;
-				$this->incompleteData[$fd] = [];
-			}
-		}
-		
-	}
+    protected function setup(\Swoole\Websocket\Frame $frame)
+    {
+        $fd = $frame->fd;
+        if ($frame->finish != 1) {
+            if (! isset($this->incompleteData[$fd])) {
+                $this->incompleteData[$fd] = [$frame->data];
+            } else {
+                array_push($this->incompleteData[$fd], $frame->data);
+            }
+        } else {
+            if (! isset($this->incompleteData[$fd])) {
+                return;
+            }
+            if (count($this->incompleteData[$fd]) > 0) {
+                $frame->data = implode('', $this->incompleteData[$fd]) . $frame->data;
+                $this->incompleteData[$fd] = [];
+            }
+        }
+	
+    }
 }

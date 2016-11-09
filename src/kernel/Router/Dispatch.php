@@ -11,6 +11,9 @@ class Dispatch
 {
 	protected $container;
 	
+	//路由规则
+	protected $rules;
+	
 	//表示“任意”的操作符
 	protected $signOfAny = ':';
 	
@@ -232,7 +235,10 @@ class Dispatch
 	//获取路由规则
 	public function getRouterRules()
 	{
-		return $this->getConfig()->getRouterRules();
+		if (! $this->rules) {
+			$this->rules = $this->getConfig()->getRouterRules();
+		}
+		return $this->rules;
 	}
 	
 	//去除空值并重置key  array_values(array_filter($arr))

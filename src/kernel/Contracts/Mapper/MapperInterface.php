@@ -101,7 +101,7 @@ interface MapperInterface
 	
 	public function remove($id = null);
 	
-	public function insert(array & $p1);
+	public function insert(array $p1);
 	
 	/**
 	 * 用法:
@@ -115,7 +115,7 @@ interface MapperInterface
 	 *
 	 *  $this->update('age', '-');
 	 * */
-	public function update($p1, $p2 = null, $p3 = null);
+	public function update($p1, $p2 = null, $p3 = 1);
 	
 	public function insertBulk();
 }

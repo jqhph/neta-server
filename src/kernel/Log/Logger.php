@@ -50,7 +50,18 @@ class Logger extends \NetaServer\Utils\Log\Base
 
 		$addRecordMethod = 'error';
 		
-		$channel->error($msg .' [' . $file . '(' . $line . ')]');
+		$msg = "$msg [$file($line)]";
+		
+		$channel->error($msg);
+		
+		$this->displayError($msg);
+	}
+	
+	protected function displayError($msg)
+	{
+		if (! defined('STARTED')) {
+			error($msg);
+		}
 	}
 	
 	/**
@@ -73,8 +84,12 @@ class Logger extends \NetaServer\Utils\Log\Base
 		if (isset($this->levels[$level])) {
 			$addRecordMethod = $this->levels[$level];
 		}
+		
+		$msg = "$msg [$file($line)]";
 
-		$channel->$addRecordMethod($msg .' [' . $file . '(' . $line . ')]');
+		$channel->$addRecordMethod($msg);
+		
+		$this->displayError($msg);
 	}
 	
 	/**
@@ -84,9 +99,10 @@ class Logger extends \NetaServer\Utils\Log\Base
 	{
 		$defaultConfig = & $this->defaultExceptionConfig;
 		//日志路径
-		$path				= Arr::get($config, 'path', $defaultConfig['path'], true);
+		$path				= Arr::getValue($config, 'path', $defaultConfig['path']);
+		
 		//日志handler处理器信息
-		$handlers		    = Arr::get($config, 'handlers', $defaultConfig['handlers'], true);
+		$handlers		    = Arr::getValue($config, 'handlers', $defaultConfig['handlers']);
 		//目录下最大文件数
 		$maxFiles			= Arr::get($config, 'maxFiles', 180);
 		//日期格式化
@@ -111,10 +127,10 @@ class Logger extends \NetaServer\Utils\Log\Base
 			if (! class_exists($handelClass)) {
 				$handelClass = '\\Monolog\\Handler\\' . $handler;
 			}
-		
+
 			$lowestLevel = Arr::get($info, 'level', \Monolog\Logger::DEBUG);
 			$bubble      = Arr::get($info, 'bubble', true);
-			$path		 = Arr::get($info, 'path', $path, true);
+			$path		 = Arr::getValue($info, 'path', $path);
 
 			$handler = new $handelClass($path, $lowestLevel, $bubble);//实例化日志处理器
 				

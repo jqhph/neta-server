@@ -246,12 +246,8 @@ class Arr
 	 * @param  mixed   $default
 	 * @return mixed
 	 */
-	public static function get(array & $array, $key, $default = null, $isEmpty = false)
+	public static function get(array & $array, $key, $default = null)
 	{
-		if ($isEmpty) {
-			return static::getValue($array, $key, $default);
-		}
-		
 		if (isset($array[$key])) {
 			return $array[$key];
 		}

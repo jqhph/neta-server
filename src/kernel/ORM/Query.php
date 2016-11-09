@@ -1,7 +1,7 @@
 <?php
 namespace NetaServer\ORM;
 
-use \NetaServer\ORM\Builders\MapperManager;
+use \NetaServer\ORM\Builders\BuilderManager;
 use \NetaServer\Injection\Container;
 
 
@@ -12,13 +12,15 @@ class Query
 {
 	protected $container;
 	
-	protected $mapperManager;
+	protected $builderManager;
 	
-	protected $entities = [];
+	protected $builder;
 	
-	public function __construct(MapperManager $mapperManager, Container $container) 
+	public function __construct(BuilderManager $builderManager, Container $container) 
 	{
-		$this->mapperManager = $mapperManager;
+		$this->builderManager = $builderManager;
+		
+		$this->builder = $builderManager->get();
 		
 		$this->container = $container;
 		
@@ -47,7 +49,7 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function manyToMany($mid, $relate)
 	{
-		$this->getMapper()->manyToMany($mid, $relate);
+		$this->builder->manyToMany($mid, $relate);
 		return $this;
 	}
 	
@@ -76,7 +78,7 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function belongsTo($table, $as = null, $table2 = null)
 	{
-		$this->getMapper()->belongsTo($table, $as, $table2);
+		$this->builder->belongsTo($table, $as, $table2);
 		return $this;
 	}
 	
@@ -98,7 +100,7 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function hasOne($table, $as = null, $table2 = null)
 	{
-		$this->getMapper()->hasOne($table, $as, $table2);
+		$this->builder->hasOne($table, $as, $table2);
 		return $this;
 	}
 	
@@ -107,12 +109,12 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function count($as = 'TOTAL')
 	{
-		return $this->getMapper()->count($as);
+		return $this->builder->count($as);
 	}
 	
 	public function sum($field, $as = 'SUM')
 	{
-		$this->getMapper()->sum($field, $as);
+		$this->builder->sum($field, $as);
 		return $this;
 	}
 	
@@ -123,7 +125,7 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	public function from($p1) 
 	{
 		$this->entityType = $p1;
-		$this->getMapper()->from($p1);
+		$this->builder->from($p1);
 		return $this;
 	}
 	
@@ -164,25 +166,25 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function where($p1, $p2 = '=', $p3 = null, $table = null)
 	{
-		$this->getMapper()->where($p1, $p2, $p3, $table);
+		$this->builder->where($p1, $p2, $p3, $table);
 		return $this;
 	}
 	
 	public function orWhere($p1, $p2 = '=', $p3 = null, $table = null)
 	{
-		$this->getMapper()->orWhere($p1, $p2, $p3, $table);
+		$this->builder->orWhere($p1, $p2, $p3, $table);
 		return $this;
 	}
 	
 	public function having($p1, $p2 = '=', $p3 = null, $table = null)
 	{
-		$this->getMapper()->having($p1, $p2, $p3, $table);
+		$this->builder->having($p1, $p2, $p3, $table);
 		return $this;
 	}
 	
 	public function orHaving($p1, $p2 = '=', $p3 = null, $table = null)
 	{
-		$this->getMapper()->orHaving($p1, $p2, $p3, $table);
+		$this->builder->orHaving($p1, $p2, $p3, $table);
 		return $this;
 	}
 	/**
@@ -198,12 +200,17 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function select($data = '*')
 	{
-		$this->getMapper()->select($data);
+		$this->builder->select($data);
 	
 		return $this;
 	}
 	
-	
+	public function field($data = '*')
+	{
+		$this->builder->select($data);
+		
+		return $this;
+	}
 	
 	/**
 	 * 用法:
@@ -213,7 +220,7 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function limit($p1, $p2 = 0)
 	{
-		$this->getMapper()->limit($p1, $p2);
+		$this->builder->limit($p1, $p2);
 		return $this;
 	}
 	
@@ -231,7 +238,17 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function update($data, $p2 = null, $p3 = 1)
 	{
-		return $this->getMapper()->update($data, $p2, $p3);
+		return $this->builder->update($data, $p2, $p3);
+	}
+	//字段值--
+	public function incr($field, $step = 1)
+	{
+		return $this->builder->update($field, '+', $step);
+	}
+	//字段值++
+	public function decr($field, $step = 1)
+	{
+		return $this->builder->update($field, '-', $step);
 	}
 	
 	/**
@@ -239,23 +256,33 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function readRow()
 	{
-		return $this->getMapper()->readRow();
+		return $this->builder->readRow();
 	}
 	
 	public function read()
 	{
-		return $this->getMapper()->read();
+		return $this->builder->read();
+	}
+	
+	public function find()
+	{
+		return $this->builder->read();
+	}
+	
+	public function findOne()
+	{
+		return $this->builder->readRow();
 	}
 	
 	public function sort($order, $desc = true)
 	{
-		$this->getMapper()->sort($order, $desc);
+		$this->builder->sort($order, $desc);
 		return $this;
 	}
 	
 	public function group($data)
 	{
-		$this->getMapper()->group($data);
+		$this->builder->group($data);
 		return $this;
 	}
 	/**
@@ -269,31 +296,38 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function leftJoin($data, $p1 = null, $p2 = null)
 	{
-		$this->getMapper()->leftJoin($data, $p1, $p2);
+		$this->builder->leftJoin($data, $p1, $p2);
 		return $this;
 	}
 	
 	public function insert(array $data)
 	{
-		return $this->getMapper()->insert($data);
+		return $this->builder->insert($data);
+	}
+	
+	public function add(array $data)
+	{
+		return $this->builder->insert($data);
 	}
 	
 	public function insertBulk()
 	{
-		return $this->getMapper()->insertBulk();
+		return $this->builder->insertBulk();
+	}
+	
+	public function addBulk()
+	{
+		return $this->builder->insertBulk();
 	}
 	
 	public function remove($id = null)
 	{
-		return $this->getMapper()->remove($id);
+		return $this->builder->remove($id);
 	}
-	//*********************************************************************
-	protected function getMapper($name = null)
+	
+	public function delete($id = null)
 	{
-		if (! $name) {
-			$name = C('query-builder-type', 'SQLJ');
-		}
-		return $this->mapperManager->get($name);
+		return $this->builder->remove($id);
 	}
 	
 }
