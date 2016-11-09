@@ -94,7 +94,7 @@ class Builder extends Base implements MapperInterface
 	 * @param  string $as  别名
 	 * @return $this
 	 */
-    public function hasMany($mid, $as = null)
+    public function relateMany($mid, $as = null)
     {
         if (! $as) {
             $as = "`$mid`";
