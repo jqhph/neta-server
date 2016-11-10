@@ -127,9 +127,11 @@ class Timer
         }
 
         $interval = Arr::getValue($config, 'interval', 3000);
+        // 延迟N毫秒后开启定时器
+        $afterTime = Arr::getValue($config, 'afterTime');
 
         # 开启定时器
-        $this->tick($interval, $name);
+        $this->tick($interval, $name, $afterTime);
     }
 
     protected function addListener($name, $call)
@@ -166,9 +168,9 @@ class Timer
      * @param string $timerName 定时器名称
      * @return void
      */
-    protected function tick($interval, $timerName)
+    protected function tick($interval, $timerName, $aTime = null)
     {
-        $aTime  = mt_rand(0, 99999);
+        $aTime = $aTime ?: mt_rand(0, 99999);
 
         # 增加一个延迟执行的定时器
         swoole_timer_after($aTime, function () use ($interval, $timerName) {
