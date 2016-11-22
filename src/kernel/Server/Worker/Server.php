@@ -44,7 +44,7 @@ abstract class Server
      * */
     protected function controller($name)
     {
-        return $this->controllerManager->get($name);
+        return $this->controllerManager->create($name);
     }
 
     /**

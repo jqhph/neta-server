@@ -20,7 +20,7 @@ class Query
 	{
 		$this->builderManager = $builderManager;
 		
-		$this->builder = $builderManager->get();
+		$this->builder = $builderManager->create();
 		
 		$this->container = $container;
 		
@@ -52,6 +52,12 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 		$this->builder->manyToMany($mid, $relate);
 		return $this;
 	}
+	
+    public function relateMany($mid, $as = null)
+    {
+    	$this->builder->relateMany($mid, $as);
+    	return $this;
+    }
 	
 	/**
 	 * 必须先调用from方法！

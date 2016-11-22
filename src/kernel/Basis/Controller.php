@@ -43,7 +43,7 @@ class Controller
      * */
     protected function model($name = null)
     {
-        return $this->container->make('model.factory')->get($name ?: $this->name);
+        return $this->container->make('model.factory')->create($name ?: $this->name);
     }
     
     /**

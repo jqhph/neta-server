@@ -9,6 +9,8 @@ class BuilderManager extends \NetaServer\Basis\Factory
 	 * */
 	public function create($name) 
 	{
+	    $name = $name ?: $this->defaultName;
+	    
 		$class = '\\NetaServer\\ORM\\Builders\\' . $name . '\\Builder';
 
 		return new $class($this->container);

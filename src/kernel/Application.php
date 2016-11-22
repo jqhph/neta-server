@@ -141,7 +141,7 @@ class Application
     {
         $log = '当前进程异常退出！';
         $error = error_get_last();
-        if (! isset($error['type'])) {
+        if (empty($error)) {
             return false;
         }
         switch ($error['type']) {

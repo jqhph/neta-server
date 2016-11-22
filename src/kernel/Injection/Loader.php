@@ -37,7 +37,7 @@ class Loader
                 'dependencies' => 'container'	
             ],
             'query' => [
-        	    'shared' => true,
+        	    'shared' => false,
                 'class' => '\NetaServer\ORM\Query',
                 'dependencies' => ['builder.manager', 'container']	
             ],
