@@ -7,7 +7,7 @@ class BuilderManager extends \NetaServer\Basis\Factory
 	/**
 	 * 创建一个映射器
 	 * */
-	public function create($name) 
+	public function create($name = null) 
 	{
 	    $name = $name ?: $this->defaultName;
 	    

@@ -22,6 +22,8 @@ abstract class Server
     protected $controllerManager;
 
     protected $serverType;
+    
+    protected $swooleServer;
 
     /**
      * @var \Server\Swoole\Server
@@ -31,6 +33,7 @@ abstract class Server
     public function __construct(Container $container, $serverType)
     {
         $this->container         = $container;
+        $this->swooleServer      = $container->make('swoole.server');
         $this->server            = $container->make('app.server');
         $this->serverType        = $serverType;
         $this->controllerManager = $container->make('controller.manager');

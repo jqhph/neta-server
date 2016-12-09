@@ -12,7 +12,7 @@ class ControllerManager extends \NetaServer\Basis\Factory
 	/**
 	 * 生产一个控制器对象
 	 * */
-	protected function create($name)
+	public function create($name)
 	{
 		$className = '\\App\\' . __MODULE__ . '\\Contr\\' . $name;
 		

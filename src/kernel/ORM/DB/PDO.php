@@ -10,15 +10,15 @@ class PDO
 	/*
 	 * 成员属性
 	 */
-	private $db_type;	//数据库类型
-	private $host;		//主机名
-	private $port;		//端口号
-	private $user;		//用户名
-	private $pass;		//密码
-	private $charset;	//字符集
-	private $dbname;	//数据库名称
-	private $prefix;	//表前缀
-	private $pdo;		//PDO实例化对象
+	protected $db_type;	// 数据库类型
+	protected $host;		// 主机名
+	protected $port;		// 端口号
+	protected $user;		// 用户名
+	protected $pass;		// 密码
+	protected $charset;	// 字符集
+	protected $dbname;	// 数据库名称
+	public    $prefix;	// 表前缀
+	protected  $pdo;		// PDO实例化对象
 	
 	protected $config;
 	# 是否启用连接池
@@ -53,10 +53,10 @@ class PDO
 		$this->dbname  = Arr::get($dbConfig, 'name');
 		$this->prefix  = Arr::get($dbConfig, 'prefix');
 
-		//连接数据库
+		// 连接数据库
 		$this->dbConnect();
 
-		//设置为utf8编码
+		// 设置为utf8编码
 		$this->pdo->query('set names utf8');
 	}
 	
@@ -64,7 +64,7 @@ class PDO
 	 * 连接数据库
 	 * 成功产生PDO对象,失败提示错误信息
 	 */
-	private function dbConnect()
+	protected function dbConnect()
 	{
 		try {
 			$dsn = "{$this->db_type}:host={$this->host};port={$this->port};dbname={$this->dbname};charset={$this->charset}";
@@ -75,7 +75,7 @@ class PDO
 				$this->pdo = new \PDO($dsn, $this->user, $this->pass);
 			}
 
-			$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);//开启异常处理
+			$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);// 开启异常处理
 			return $this->pdo;
 		} catch (\PDOException $e) {
 			return $this->dealErrorInfo($e);
@@ -88,9 +88,9 @@ class PDO
 			$this->pdo->release();
 		}
 	}
-//--------------------------------------------------------------
-// | 无预处理, 直接执行sql操作
-//--------------------------------------------------------------	
+// --------------------------------------------------------------
+//  | 无预处理, 直接执行sql操作
+// --------------------------------------------------------------	
 	/**
 	 * exec写操作
 	 * */
@@ -183,9 +183,9 @@ class PDO
 	}
 	
 	
-//--------------------------------------------------------------
-// | 预处理执行sql操作
-//--------------------------------------------------------------	
+// --------------------------------------------------------------
+//  | 预处理执行sql操作
+// --------------------------------------------------------------	
 	
 	/**
 	 * 预处理
@@ -275,7 +275,7 @@ class PDO
 		
 		$updateStr = substr($updateStr, 0, - 1);
 		$sql = 'UPDATE `' . $table . '` SET ' . $updateStr . $where;
-//debug($sql);die;
+// debug($sql);die;
 		return $this->prepare($sql, $data, false);
 	}
 	
@@ -320,36 +320,36 @@ class PDO
 	}
 
 
-	//异常处理
-	private function dealExecption($sql, $fun, $e) {
-		$res = $this->reConnect();//判断重连失效，是则重连，否则做其他处理
+	// 异常处理
+	protected function dealExecption($sql, $fun, $e) {
+		$res = $this->reConnect();// 判断重连失效，是则重连，否则做其他处理
 		if ($res) {
 			return $this->pdo->$fun($sql);
 		} else {
-			//一次重连失败，再重连一次
+			// 一次重连失败，再重连一次
 			if ($this->dbConnect()) {
 				$res = $this->pdo->$fun($sql);
 				$this->release();
 				return $res;
-			}else {//再重连失败
-				//错误处理
+			}else {// 再重连失败
+				// 错误处理
 				$this->dealErrorInfo($e);
 			}
 		}
 	}
 
-	private function reConnect() {
+	protected function reConnect() {
 		$errorInfo = $this->pdo->errorInfo();
-		$errorNum = $errorInfo[1];
+		$errorNum  = $errorInfo[1];
 		$sqlStatus = $errorInfo[0];
-		$errorMsg = $errorInfo[2];
+		$errorMsg  = $errorInfo[2];
 
-		if ($errorNum == '2006' || $errorNum == '2013') {//mysql连接失效
-			return $this->dbConnect();//重新连接
+		if ($errorNum == '2006' || $errorNum == '2013') {// mysql连接失效
+			return $this->dbConnect();// 重新连接
 		}
 	}
 
-	private function dealErrorInfo($e)
+	protected function dealErrorInfo($e)
 	{
 		app('exception.handler')->run($e);
 	}

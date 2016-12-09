@@ -25,7 +25,7 @@ class Loader
 	protected $bindings = [//加载器加载信息（优先查找load*方法，找不到再从此数组信息中找）
             'container' => [
                 'shared' => true,
-                'class' => '\NetaServer\Injection\Container'
+                'class' => 'NetaServer\Injection\Container'
             ],
             'config' => [
         	    'shared' => true,
@@ -57,7 +57,7 @@ class Loader
                 'dependencies' => 'config'
             ],
             'http.client' => [
-        	    'shared' => true,
+        	    'shared' => false,
                 'class' => '\\NetaServer\\Http\\Client'
             ],
             'pipeline.manager' => [
@@ -141,7 +141,11 @@ class Loader
         
         switch (count($dependencies)) {
             case 0:
-    	       return new $className();
+                if ($className == 'NetaServer\Injection\Container') {
+//                     debug('--c g i--');
+                	return static::getInstance();
+                }
+                return new $className();
             	
             case 1: 
     	       return new $className($this->getDependencyInstance($dependencies[0]));

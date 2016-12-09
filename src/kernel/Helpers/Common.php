@@ -32,10 +32,24 @@ if (! function_exists('app')) {
  * 
  * @return \Server\Swoole\Server
  * */
-if (! function_exists('serv')) {
-    function serv()
+if (! function_exists('app_serv')) {
+    function app_serv()
     {
         return $GLOBALS['__app__']->make('app.server');
+    }
+}
+
+if (! function_exists('swoole_serv')) {
+    function swoole_serv()
+    {
+        return $GLOBALS['__app__']->make('swoole.server');
+    }
+}
+
+if (! function_exists('swoole_worker_serv')) {
+    function swoole_worker_serv()
+    {
+        return $GLOBALS['__app__']->make('app.server')->getSwooleWorkerServer();
     }
 }
 
@@ -214,6 +228,10 @@ if (! function_exists('error')) {
 if (! function_exists('debug')) {
     function debug($data, $json = false)
     {
+        // 检测是否开启调试模式
+        if (! C('debug', false)) {
+            return;
+        }
         if (is_string($data) || is_integer($data) || is_bool($data)) {
             echo date('[H:i:s]') . " $data\n";
         } elseif (is_array($data)) {

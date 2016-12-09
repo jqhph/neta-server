@@ -44,7 +44,7 @@ class Builder extends Base implements MapperInterface
 	
     public function from($table, $p2 = null) 
     {
-        $this->tableName = $table;
+        $this->tableName = $this->getConnection()->prefix . $table;
         return $this;
     }
 	
@@ -558,6 +558,9 @@ class Builder extends Base implements MapperInterface
 	 * */
     public function leftJoin($table, $p1 = null, $p2 = null)
     {
+        // 添加表前缀
+        $table = $this->getConnection()->prefix . $table;
+        
         if (strpos($table, ' ') === false) {
             $table = "`$table`";
         } 

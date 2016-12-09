@@ -36,9 +36,7 @@ class Container extends Loader implements ContainerInterface
     	   return isset($this->storage[$key]) ? $this->storage[$key] : $default;
         }
         
-        $this->storage[$key] = $value;
-        
-        return $value;
+        return $this->storage[$key] = $value;
     }
     
     public function unstore($key)

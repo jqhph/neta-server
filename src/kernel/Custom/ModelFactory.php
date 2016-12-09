@@ -8,7 +8,7 @@ use \NetaServer\Basis\Factory;
  * */
 class ModelFactory extends Factory
 {
-	protected function create($name) 
+	public function create($name) 
 	{
 		$className = '\\App\\' . __MODULE__ . '\\Model\\' . $name;
 		

@@ -2,7 +2,7 @@
 namespace NetaServer;
 
 use \NetaServer\Server\Swoole\Websocket;
-use \NetaServer\Server\Swoole\Tcp;
+use \NetaServer\Server\Swoole\TCP;
 
 class Application 
 {
@@ -39,6 +39,7 @@ class Application
     
     public function regist()
     {
+        info('regist error handler');
         # 异常捕获, 此函数对swoole事件回调方法无效
         set_exception_handler([$this->container->make('exception.handler'), 'run']);
         # 注册错误处理事件
@@ -49,15 +50,15 @@ class Application
     
     protected function init() 
     {
-        if (C('php.debug', false)) {
-            # 开发环境开启错误提示
-            ini_set('error_reporting', E_ALL);
-            ini_set('display_errors', 1);
-        } else {
-            ini_set('error_reporting', -1);
-            ini_set('display_errors', 'off');
-            ini_set('log_errors', 'off');
-        }
+//         if (C('php.debug', false)) {
+//             # 开发环境开启错误提示
+//             ini_set('error_reporting', E_ALL);
+//             ini_set('display_errors', 1);
+//         } else {
+//             ini_set('error_reporting', -1);
+//             ini_set('display_errors', 'off');
+//             ini_set('log_errors', 'off');
+//         }
         
         # 项目目录
         define('__MODULE__', C('application', 'JQH'));
@@ -91,10 +92,10 @@ class Application
             exit;
         }
         
-        if (! function_exists('msgpack_pack')) {
-            error('请先安装msgpack扩展, 下载地址: https://pecl.php.net/package/msgpack');
-            exit;
-        }
+//         if (! function_exists('msgpack_pack')) {
+//             error('请先安装msgpack扩展, 下载地址: https://pecl.php.net/package/msgpack');
+//             exit;
+//         }
         
         if (! class_exists('\Redis')) {
             error('请先安装redis扩展, 下载地址: https://pecl.php.net/package/redis');

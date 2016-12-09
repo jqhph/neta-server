@@ -49,6 +49,7 @@ abstract class Server
      * */
     protected $publicService = [
         'container',
+        'NetaServer\Injection\Container',
         'app.server', # $this
         'pipeline.manager',
         'builder.manager',
@@ -67,6 +68,13 @@ abstract class Server
      * */
     protected $workerServer;
     
+    /**
+     * 保存WorkerStart事件中传入的server
+     *
+     * @var 
+     */
+    protected $swooleWorkerServer;
+    
     public function __construct(Container $container, $type)
     {
         $this->container = $container;
@@ -84,26 +92,55 @@ abstract class Server
     # 监听其他服务
     protected function listen()
     {
-        return;
-        $host = C('listen.host', '0.0.0.0');
-        $port = C('listen.port', 9959);
-        $type = C('listen.type', SWOOLE_SOCK_TCP);
+        // 监听配置
+        $config = C('port-listen');
+        if (count($config) < 1) {
+            return;
+        }
         
-        info("listen ===> host: $host, port: $port, type: $type");
+        foreach ($config as $name => $c) {
+            info("listen ===> {$c['host']}:{$c['port']}, type:{$c['type']}");
+            $this->ports[$name] = $this->server->listen($c['host'], $c['port'], $c['type']);
+            $this->ports[$name]->set($c['set']);
         
-        $this->serverPort = $this->server->listen($host, $port, $type);
-        # 设置分包协议
-        $config = [
-            'open_eof_check' => true,
-            'open_eof_split' => false,
-            'package_eof'    => C('listen.package_eof', "\r\n"),
-        ];
-        $this->serverPort->set($config);
+            $listener = null;
         
-        $this->serverPort->on('Receive', function (\Swoole\Server $serv, $fd, $fromId, $data) {
+            // 设置回调事件
+            foreach ($c['on'] as $event => $n) {
+                list($class, $method) = $this->parseClassCallable($n);
+                if (! $listener) {
+                    $listenerClass = $this->makeListenerClass($class);
+                    $listener      = new $listenerClass($this->ports[$name], $c);
+                }
+                $this->ports[$name]->on($event, [$listener, $method]);
+            }
         
-        });
+            $listener = null;
+        
+            $registName = 'port.' . $name;
+            // 注册port server到容器
+            $this->container->instance($registName, $this->ports[$name]);
+            // 保护容器清理时不被清除port server
+            $this->publicService[] = $registName;
+        }
     
+    }
+    
+    protected function parseClassCallable($string)
+    {
+        $segments = explode('@', $string);
+    
+        return [$segments[0], count($segments) == 2 ? $segments[1] : 'handle'];
+    }
+    
+    // 获取监听者类名
+    protected function makeListenerClass($name)
+    {
+        $class = 'App\\' . __MODULE__ . '\\Port\\' . $name;
+        if (class_exists($class)) {
+        	return $class;
+        }
+        return 'NetaServer\\Server\\Port\\' . $name;
     }
     
     # 注册事件回调方法
@@ -141,14 +178,29 @@ abstract class Server
         $this->publicService[] = $data;
     }
     
+    public function getSwooleWorkerServer()
+    {
+        return $this->swooleWorkerServer;
+    }
+    
     public function onWorkerStart(\Swoole\Server $serv, $worker_id)
     {
         try {
+            # php相关配置
+            date_default_timezone_set(C('php.timezone', 'PRC'));
+            
             # 热加载[更新配置文件等信息] 清理所有服务
             if (isset($this->workerServer()->publicService)) {
                 $this->publicService = array_merge($this->publicService, (array) $this->workerServer()->publicService);
             }
             $this->container->clear($this->publicService);
+            
+            $this->container->instance('worker.server', $serv);
+            
+            // 注册错误处理handler
+            $this->container->make('application')->regist();
+            
+            $this->swooleWorkerServer = $serv;
             
             define('WORKER_ID', $serv->worker_id);
             
@@ -222,6 +274,9 @@ abstract class Server
             }
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
 	
@@ -231,6 +286,9 @@ abstract class Server
             $this->workerServer()->onPipeMessage($serv, $from_worker_id, $message);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
@@ -240,6 +298,9 @@ abstract class Server
             $this->workerServer()->onManagerStart($serv);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
@@ -250,6 +311,9 @@ abstract class Server
             $this->workerServer()->onManagerStop($serv, $worker_id);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
@@ -259,6 +323,9 @@ abstract class Server
             $this->workerServer()->onFinish($serv, $data);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
@@ -268,6 +335,9 @@ abstract class Server
             $this->workerServer()->onTask($serv, $task_id, $from_id, $data);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
@@ -292,6 +362,9 @@ abstract class Server
             $this->workerServer()->onStart($serv);
         } catch (\Exception $e) {
         	$this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
@@ -305,6 +378,9 @@ abstract class Server
             $this->workerServer()->onWorkerError($serv, $worker_id, $worker_pid, $exit_code);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
@@ -316,6 +392,9 @@ abstract class Server
             $this->workerServer()->onWorkerStop($serv, $worker_id);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
@@ -325,6 +404,9 @@ abstract class Server
             $this->workerServer()->onClose($serv, $fd);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
@@ -336,6 +418,9 @@ abstract class Server
             $this->workerServer()->onShutdown($serv);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
+        } catch (\Error $e){ 
+            $this->container->make('exception.handler')->run($e);
+            
         }
     }
     
