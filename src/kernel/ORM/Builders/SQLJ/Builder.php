@@ -144,9 +144,10 @@ class Builder extends Base implements MapperInterface
 	/**
 	 * 获取统计数量
 	 * */
-	public function count($as = 'TOTAL')
+	public function count()
 	{
-		return $this->select("COUNT(*) AS `$as`")->readRow();
+		$r = $this->select("COUNT(*) AS `TOTAL`")->readRow();
+		return $r ? $r['TOTAL'] : 0;
 	}
 	
 	public function sum($field, $as = 'SUM')
@@ -603,6 +604,13 @@ class Builder extends Base implements MapperInterface
     public function insert(array $p1) 
     {
         $res = $this->getConnection()->add($this->tableName, $p1);
+        $this->clear();
+        return $res;
+    }
+    
+    public function replace(array $p1)
+    {
+        $res = $this->getConnection()->replace($this->tableName, $p1);
         $this->clear();
         return $res;
     }

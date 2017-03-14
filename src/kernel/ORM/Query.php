@@ -113,9 +113,9 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	/**
 	 * 获取统计数量
 	 * */
-	public function count($as = 'TOTAL')
+	public function count()
 	{
-		return $this->builder->count($as);
+		return $this->builder->count();
 	}
 	
 	public function sum($field, $as = 'SUM')
@@ -309,6 +309,11 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	public function insert(array $data)
 	{
 		return $this->builder->insert($data);
+	}
+	
+	public function replace(array $data)
+	{
+	    return $this->builder->replace($data);
 	}
 	
 	public function add(array $data)

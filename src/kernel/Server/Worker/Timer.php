@@ -170,7 +170,7 @@ class Timer
      */
     protected function tick($interval, $timerName, $aTime = null)
     {
-        $aTime = $aTime ?: mt_rand(0, 99999);
+        $aTime = $aTime ?: mt_rand(0, 5000);
         
         # 增加一个延迟执行的定时器
         swoole_timer_after($aTime, function () use ($interval, $timerName) {

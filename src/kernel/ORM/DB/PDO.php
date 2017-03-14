@@ -302,7 +302,7 @@ class PDO
 		$field  = substr($field,  0, - 1);
 		$values = substr($values, 0, - 1);
 
-		$sql = 'REPLACE INTO `' . $table . '` (' . $field . ') VALUES (' . $values . ')';
+		$sql = 'INSERT INTO `' . $table . '` (' . $field . ') VALUES (' . $values . ')';
 		
 		$res = $this->prepare($sql, $data, false);
 		$id = $this->pdo->lastInsertId();
@@ -311,6 +311,32 @@ class PDO
 		}
 		return $res;
 		
+	}
+	
+	public function replace($table, array $data)
+	{
+	    $field = '';
+	    $values = '';
+	
+	    foreach ($data as $k => $v) {
+	        $field  .= '`' . $k . '`,';
+	        $values .= '?,';
+	        	
+	        unset($data[$k]);
+	        $data[] = $v;
+	    }
+	    $field  = substr($field,  0, - 1);
+	    $values = substr($values, 0, - 1);
+	
+	    $sql = 'REPLACE INTO `' . $table . '` (' . $field . ') VALUES (' . $values . ')';
+	
+	    $res = $this->prepare($sql, $data, false);
+	    $id = $this->pdo->lastInsertId();
+	    if ($id) {
+	        return $id;
+	    }
+	    return $res;
+	
 	}
 	
 	public function delete($table, $where = '', array $whereData = []) 
