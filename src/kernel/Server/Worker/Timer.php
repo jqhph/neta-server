@@ -5,6 +5,7 @@ use \NetaServer\Injection\Container;
 use \Swoole\Atomic;
 use \NetaServer\Support\Arr;
 use \NetaServer\Exceptions\InternalServerError;
+use \Swoole\Table;
 
 /**
  * 定时器管理类
@@ -16,6 +17,10 @@ use \NetaServer\Exceptions\InternalServerError;
  */
 class Timer
 {
+    const SAME_WORKER = 1;
+    
+    const DIFF_WORKER = 2;
+    
     protected $container;
     
     /**
@@ -48,6 +53,10 @@ class Timer
     
     protected static $concretes;
     
+    protected static $startMode;
+    
+    protected static $table;
+    
     /**
      * 每40亿重置一次计数器
      * */
@@ -56,7 +65,9 @@ class Timer
     public function __construct(Container $container)
     {
         $this->container = $container;
-        //$this->server    = $container->make('app.server');
+        
+        //开启定时器模式，默认统一在“0”worker进程开启
+        self::$startMode = C('server.timer-start-mode', self::SAME_WORKER);
     }
 
     /**
@@ -75,6 +86,72 @@ class Timer
         $this->addCount($name);
         # 回调指定的方法
         call_user_func($this->makeListener($name), $timeId, $name);
+    }
+    
+    public function handle($workerId)
+    {
+        //开启定时器模式，默认统一在“0”worker进程开启
+        $startMode  = self::$startMode;
+        
+        # 在第一个进程创建的时候开启定时器
+        if (! $timer = C('server.timer')) {
+            return;
+        }
+        
+        foreach ($timer as $name => $v) {
+            if ($workerId == 0 && $startMode == self::SAME_WORKER) {
+                $this->add($name, $v);
+                continue;
+            }
+        
+            // 分散在不同进程开启定时器
+            $this->dispatchWorkerId($timer);
+        
+            $data = self::$table->get($name);
+            if ($data['worker_id'] == $workerId) {
+                $this->add($name, $v);
+            }
+        }
+    }
+    
+    protected function dispatchWorkerId($timer)
+    {
+        foreach ($timer as $name => $v) {
+            $id = $this->getWorkerId($name);
+            
+            self::$table->set($name, ['worker_id' => $id]);
+        }
+    }
+    
+    protected function getWorkerId($name)
+    {
+        $workerNum = C('server.set.worker_num', linux_cpu_num());
+        
+        if ($workerNum == 1) {
+            return 0;
+        }
+        
+        for ($i = 0; $i < $workerNum; $i ++) {
+            if ($this->isWorkerIdExist($i)) {
+                return $i;
+            }
+        }
+        
+        return rand(0, $workerNum - 1);
+    }
+    
+    protected function isWorkerIdExist($id)
+    {
+        $start = true;
+        foreach(self::$table as $row) {
+            if ($id == $row['worker_id']) {
+                $start = false;
+            }
+        }
+        if ($start) {
+            return $id;
+        }
+        return false;
     }
     
     /**
@@ -159,6 +236,17 @@ class Timer
             self::$timerRunCounter[$name]  = new Atomic();
             self::$timerRunCounterX[$name] = new Atomic();
         }
+        
+        if (self::$startMode != self::DIFF_WORKER) {
+            return;
+        }
+        
+        // 根据定时器名称保存进程id
+        self::$table = new Table(1024);
+        self::$table->column('worker_id', Table::TYPE_INT, 4);       //1,2,4,8
+//         self::$table->column('timer_id', Table::TYPE_INT, 4);
+        self::$table->create();
+        
     }
     
     /**
@@ -170,15 +258,22 @@ class Timer
      */
     protected function tick($interval, $timerName, $aTime = null)
     {
-        $aTime = $aTime ?: mt_rand(0, 5000);
+        $aTime = $aTime ?: mt_rand(0, 10000);
         
         # 增加一个延迟执行的定时器
         swoole_timer_after($aTime, function () use ($interval, $timerName) {
             # 添加定时器
             self::$timeIds[$timerName] = swoole_timer_tick($interval, [$this, 'onTimer'], $timerName);
             
+            $this->callAfterStart($timerName);
+            
             logger('server')->info('定时器[' . $timerName . ']开启成功！定时器ID: ' . self::$timeIds[$timerName]);
         });
+    }
+    
+    protected function callAfterStart($name)
+    {
+        app('events')->fire('timer.start', [self::$timeIds[$name], $name]);
     }
     
     /**

@@ -182,7 +182,7 @@ abstract class Server
         return $this->swooleWorkerServer;
     }
     
-    public function onWorkerStart(\Swoole\Server $serv, $worker_id)
+    public function onWorkerStart(\Swoole\Server $serv, $workerId)
     {
         try {
             $this->container->instance('worker.server', $serv);
@@ -201,76 +201,80 @@ abstract class Server
             
             defined('STARTED') || define('STARTED', 1);
             
-            $workerNum = C('server.set.worker_num');
+            $workerNum = C('server.set.worker_num', linux_cpu_num());
             
             # 调用用户自定义处理方法
-            $this->workerServer()->onWorkerStart($serv, $worker_id);
+            $this->workerServer()->onWorkerStart($serv, $workerId);
+            
             // ----------------------------------------------------------------------------
             // ---------------------------------------tasker进程---------------------------
             // ----------------------------------------------------------------------------
-            if ($worker_id >= $workerNum) {
-                define('IS_WORKER', false);
-                
-                # 内存限制
-                ini_set('memory_limit', c('server.task_worker_memory_limit') ?: '1G');
-                if (($serv->worker_id - $workerNum) == 0) {
-                    info('Current server task worker memory limit is: '. ini_get('memory_limit'));
-                }
-                
-                $processName = C('server.name') . ' tasker num:' . ($serv->worker_id - $workerNum) .
-                    ' [' . date('Y-m-d H:i:s') . '] pid:' . $serv->worker_pid;
-                # 进程命名
-                swoole_set_process_name($processName);
-                
-                app('file.manager')->appendContents(
-                        __ROOT__ . C('server.tmplog', $this->defaultTmplogPath),
-                        $processName . "\n"
-                );
-                
-                return;
+            if ($workerId >= $workerNum) {
+                return $this->taskerStart($serv, $workerId, $workerNum);
             }
             // ------------------------------------------------------------------------
             // ----------------------------------worker进程----------------------------
             // ------------------------------------------------------------------------
-            # worker进程
-            define('IS_WORKER', true);
-            
-            # 内存限制
-            ini_set('memory_limit', C('server.worker_memory_limit') ?: '1G');
-            if ($worker_id == 0) {
-                info('Current server worker memory limit is: '. ini_get('memory_limit'));
-            }
-            
-            $processName = C('server.name') . ' worker num:' . $serv->worker_id . ' ['
-                . date('Y-m-d H:i:s') . '] pid:' . $serv->worker_pid;
-            
-            # 进程命名
-            swoole_set_process_name($processName);
-            # 临时文件
-            app('file.manager')->appendContents(
-                __ROOT__ . C('server.tmplog', $this->defaultTmplogPath),
-                $processName . "\n"
-            );
-            
-            if ($serv->worker_id == 0) {
-                # 在第一个进程创建的时候开启定时器
-                if ($timer = C('server.timer')) {
-                    foreach ($timer as $name => $v) {
-                        app('server.timer')->add($name, $v);
-                    }
-                }
-                
-                info('worker进程数量: ' . $workerNum);
-                if ($taskNum = C('server.set.task_worker_num')) {
-                    info('task进程数量: ' . $workerNum);
-                }
-            }
+            $this->workerStart($serv, $workerId, $workerNum); 
+                       
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
         } catch (\Error $e) { 
             $this->container->make('exception.handler')->run($e);
             
         }
+    }
+    
+    protected function workerStart($serv, $workerId, $workerNum)
+    {
+        define('IS_WORKER', true);
+        
+        # 内存限制
+        ini_set('memory_limit', C('server.worker_memory_limit') ?: '1G');
+        if ($workerId == 0) {
+            info('Current server worker memory limit is: '. ini_get('memory_limit'));
+            
+            info('worker进程数量: ' . $workerNum);
+            if ($taskNum = C('server.set.task_worker_num')) {
+                info('task进程数量: ' . $workerNum);
+            }
+        }
+        
+        $processName = C('server.name') . ' worker num:' . $serv->worker_id . ' ['
+            . date('Y-m-d H:i:s') . '] pid:' . $serv->worker_pid;
+        
+        # 进程命名
+        swoole_set_process_name($processName);
+        # 临时文件
+        app('file.manager')->appendContents(
+            __ROOT__ . C('server.tmplog', $this->defaultTmplogPath),
+            $processName . "\n"
+        );
+
+        // 开启定时器
+        app('server.timer')->handle($workerId);
+        
+    }
+    
+    protected function taskerStart($serv, $workerId, $workerNum)
+    {
+        define('IS_WORKER', false);
+        
+        # 内存限制
+        ini_set('memory_limit', c('server.task_worker_memory_limit') ?: '1G');
+        if (($serv->worker_id - $workerNum) == 0) {
+            info('Current server task worker memory limit is: '. ini_get('memory_limit'));
+        }
+        
+        $processName = C('server.name') . ' tasker num:' . ($serv->worker_id - $workerNum) .
+        ' [' . date('Y-m-d H:i:s') . '] pid:' . $serv->worker_pid;
+        # 进程命名
+        swoole_set_process_name($processName);
+
+        app('file.manager')->appendContents(
+            __ROOT__ . C('server.tmplog', $this->defaultTmplogPath),
+            $processName . "\n"
+        );
     }
 	
     public function onPipeMessage(\Swoole\Server $serv, $from_worker_id, $message)
@@ -301,11 +305,11 @@ abstract class Server
         }
     }
     
-    public function onManagerStop(\Swoole\Server $serv, $worker_id = null)
+    public function onManagerStop(\Swoole\Server $serv, $workerId = null)
     {
         try {
             logger('server')->error('manager进程异常退出');
-            $this->workerServer()->onManagerStop($serv, $worker_id);
+            $this->workerServer()->onManagerStop($serv, $workerId);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
         } catch (\Error $e) { 
@@ -366,13 +370,13 @@ abstract class Server
     }
     
     # 进程异常退出。记录错误
-    public function onWorkerError(\Swoole\Server $serv, $worker_id, $worker_pid, $exit_code)
+    public function onWorkerError(\Swoole\Server $serv, $workerId, $workerPid, $exitCode)
     {
         try {
-            $msg = "worker进程异常退出！worker_id: $worker_id; worker_pid: $worker_pid; exit_code: $exit_code";
+            $msg = "worker进程异常退出！worker_id: $workerId; worker_pid: $workerPid; exit_code: $exitCode";
             
             logger('server')->error($msg);
-            $this->workerServer()->onWorkerError($serv, $worker_id, $worker_pid, $exit_code);
+            $this->workerServer()->onWorkerError($serv, $workerId, $workerPid, $exitCode);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
         } catch (\Error $e) { 
@@ -381,12 +385,12 @@ abstract class Server
         }
     }
     
-    public function onWorkerStop(\Swoole\Server $serv, $worker_id)
+    public function onWorkerStop(\Swoole\Server $serv, $workerId)
     {
         try {
-            $msg = 'worker进程终止。worker_id: ' . $worker_id;
+            $msg = 'worker进程终止。worker_id: ' . $workerId;
             logger('server')->info($msg);
-            $this->workerServer()->onWorkerStop($serv, $worker_id);
+            $this->workerServer()->onWorkerStop($serv, $workerId);
         } catch (\Exception $e) {
             $this->container->make('exception.handler')->run($e);
         } catch (\Error $e) { 

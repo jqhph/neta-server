@@ -270,13 +270,21 @@ class Container extends Loader implements ContainerInterface
      * @param  string  $abstract
      * @return void
      */
-    protected function dropStaleInstances($abstract)
+    public function dropInstance($abstract)
     {
         if (isset(self::$instances[$abstract])) {
             $class = get_class(self::$instances[$abstract]);
             unset(self::$instances[$class]);
         }
         unset(self::$instances[$abstract], $this->aliases[$abstract]);
+    }
+    
+    // 批量移除
+    public function dropInstances($abstracts)
+    {
+        foreach ((array) $abstracts as $v) {
+        	$this->dropInstance($v);
+        }
     }
     
     /**
@@ -323,7 +331,7 @@ class Container extends Loader implements ContainerInterface
     public function clear($except = [])
     {
         $new = [];
-        foreach ((array) $except as & $e) {
+        foreach ((array) $except as $e) {
             if (isset(self::$instances[$e])) {
                 $new[$e] = self::$instances[$e];
                 
@@ -331,7 +339,7 @@ class Container extends Loader implements ContainerInterface
             }
         }
         self::$instances = null;
-        self::$instances = & $new;
+        self::$instances = $new;
     }
     
 	/**

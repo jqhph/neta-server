@@ -77,7 +77,7 @@ class Dispatcher implements \NetaServer\Contracts\Events\Dispatcher
 	 */
 	protected function createClassCallable($listener)
 	{
-		list($class, $method) = $this->parseClassCallable($listener);
+		list($class, $method) = parse_class_callable($listener);
 	
 // 		if ($this->handlerShouldBeQueued($class)) {
 // 			return $this->createQueuedHandlerCallable($class, $method);
@@ -129,12 +129,12 @@ class Dispatcher implements \NetaServer\Contracts\Events\Dispatcher
 	 * @param  string  $listener
 	 * @return array
 	 */
-	protected function parseClassCallable($listener)
-	{
-		$segments = explode('@', $listener);
+// 	protected function parseClassCallable($listener)
+// 	{
+// 		$segments = explode('@', $listener);
 	
-		return [$segments[0], count($segments) == 2 ? $segments[1] : 'handle'];
-	}
+// 		return [$segments[0], count($segments) == 2 ? $segments[1] : 'handle'];
+// 	}
 	
 	/**
 	 * 触发监听事件

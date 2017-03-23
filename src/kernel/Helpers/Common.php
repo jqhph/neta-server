@@ -27,6 +27,22 @@ if (! function_exists('app')) {
     }
 }
 
+if (! function_exists('linux_cpu_num')) {
+    function linux_cpu_num()
+    {
+        // CPU
+        if (false === ($str = file('/proc/cpuinfo'))) return false;
+        $str = implode('', $str);
+        preg_match_all("/model\s+name\s{0,}\:+\s{0,}([\w\s\)\(\@.-]+)([\r\n]+)/s", $str, $mode);
+    
+        if (false !== is_array($mode[1])) {
+            return sizeof($mode[1]);
+        }
+        logger('server')->error('Can not get system cpu\'s num!');
+        return false;
+    }    
+}
+
 /**
  * 获取server类实例
  * 
@@ -50,6 +66,24 @@ if (! function_exists('swoole_worker_serv')) {
     function swoole_worker_serv()
     {
         return $GLOBALS['__app__']->make('app.server')->getSwooleWorkerServer();
+    }
+}
+
+
+/**
+ * 解析回调方法字符串（类 + 方法）
+ *
+ * @date   2016-12-13 下午4:21:57
+ * @author jqh
+ * @param  string $string
+ * @return array
+ */
+if (! function_exists('parse_class_callable')) {
+    function parse_class_callable($string)
+    {
+        $segments = explode('@', $string);
+        
+        return [$segments[0], count($segments) == 2 ? $segments[1] : 'handle'];
     }
 }
 
@@ -113,7 +147,7 @@ if (! function_exists('env')) {
         $value = getenv($key);
         
         if ($value === false) {
-        	return $default;
+            return $default;
         }
         
         switch (strtolower($value)) {

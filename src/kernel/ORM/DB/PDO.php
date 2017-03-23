@@ -60,6 +60,21 @@ class PDO
 		$this->pdo->query('set names utf8');
 	}
 	
+	public function beginTransaction()
+	{
+	   return $this->pdo->beginTransaction();
+	}
+	
+	public function commit()
+	{
+	    return $this->pdo->commit();
+	}
+	
+	public function rollBack()
+	{
+	    return $this->pdo->rollBack();
+	}
+	
 	/*
 	 * 连接数据库
 	 * 成功产生PDO对象,失败提示错误信息

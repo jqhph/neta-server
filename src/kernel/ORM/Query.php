@@ -18,11 +18,11 @@ class Query
 	
 	public function __construct(BuilderManager $builderManager, Container $container) 
 	{
-		$this->builderManager = $builderManager;
+	    $this->builderManager = $builderManager;
 		
-		$this->builder = $builderManager->create();
+	    $this->builder = $builderManager->create();
 		
-		$this->container = $container;
+	    $this->container = $container;
 		
 	}
 	
@@ -49,14 +49,14 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function manyToMany($mid, $relate)
 	{
-		$this->builder->manyToMany($mid, $relate);
-		return $this;
+	    $this->builder->manyToMany($mid, $relate);
+	    return $this;
 	}
 	
     public function relateMany($mid, $as = null)
     {
-    	$this->builder->relateMany($mid, $as);
-    	return $this;
+        $this->builder->relateMany($mid, $as);
+        return $this;
     }
 	
 	/**
@@ -84,8 +84,8 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function belongsTo($table, $as = null, $table2 = null)
 	{
-		$this->builder->belongsTo($table, $as, $table2);
-		return $this;
+	    $this->builder->belongsTo($table, $as, $table2);
+	    return $this;
 	}
 	
 	/**
@@ -106,8 +106,8 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function hasOne($table, $as = null, $table2 = null)
 	{
-		$this->builder->hasOne($table, $as, $table2);
-		return $this;
+	    $this->builder->hasOne($table, $as, $table2);
+	    return $this;
 	}
 	
 	/**
@@ -115,13 +115,13 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function count()
 	{
-		return $this->builder->count();
+	    return $this->builder->count();
 	}
 	
 	public function sum($field, $as = 'SUM')
 	{
-		$this->builder->sum($field, $as);
-		return $this;
+	    $this->builder->sum($field, $as);
+	    return $this;
 	}
 	
 	
@@ -130,9 +130,9 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function from($p1) 
 	{
-		$this->entityType = $p1;
-		$this->builder->from($p1);
-		return $this;
+	    $this->entityType = $p1;
+	    $this->builder->from($p1);
+	    return $this;
 	}
 	
 	//******************************数据库操作方法**************************
@@ -172,26 +172,26 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function where($p1, $p2 = '=', $p3 = null, $table = null)
 	{
-		$this->builder->where($p1, $p2, $p3, $table);
-		return $this;
+	    $this->builder->where($p1, $p2, $p3, $table);
+	    return $this;
 	}
 	
 	public function orWhere($p1, $p2 = '=', $p3 = null, $table = null)
 	{
-		$this->builder->orWhere($p1, $p2, $p3, $table);
-		return $this;
+	    $this->builder->orWhere($p1, $p2, $p3, $table);
+	    return $this;
 	}
 	
 	public function having($p1, $p2 = '=', $p3 = null, $table = null)
 	{
-		$this->builder->having($p1, $p2, $p3, $table);
-		return $this;
+	    $this->builder->having($p1, $p2, $p3, $table);
+	    return $this;
 	}
 	
 	public function orHaving($p1, $p2 = '=', $p3 = null, $table = null)
 	{
-		$this->builder->orHaving($p1, $p2, $p3, $table);
-		return $this;
+	    $this->builder->orHaving($p1, $p2, $p3, $table);
+	    return $this;
 	}
 	/**
 	 *  传入：
@@ -206,16 +206,16 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function select($data = '*')
 	{
-		$this->builder->select($data);
+	    $this->builder->select($data);
 	
-		return $this;
+	    return $this;
 	}
 	
 	public function field($data = '*')
 	{
-		$this->builder->select($data);
+	    $this->builder->select($data);
 		
-		return $this;
+	    return $this;
 	}
 	
 	/**
@@ -226,8 +226,8 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function limit($p1, $p2 = 0)
 	{
-		$this->builder->limit($p1, $p2);
-		return $this;
+	    $this->builder->limit($p1, $p2);
+	    return $this;
 	}
 	
 	/**
@@ -244,17 +244,17 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function update($data, $p2 = null, $p3 = 1)
 	{
-		return $this->builder->update($data, $p2, $p3);
+	    return $this->builder->update($data, $p2, $p3);
 	}
 	//字段值--
 	public function incr($field, $step = 1)
 	{
-		return $this->builder->update($field, '+', $step);
+	    return $this->builder->update($field, '+', $step);
 	}
 	//字段值++
 	public function decr($field, $step = 1)
 	{
-		return $this->builder->update($field, '-', $step);
+	    return $this->builder->update($field, '-', $step);
 	}
 	
 	/**
@@ -262,34 +262,34 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function readRow()
 	{
-		return $this->builder->readRow();
+	    return $this->builder->readRow();
 	}
 	
 	public function read()
 	{
-		return $this->builder->read();
+	    return $this->builder->read();
 	}
 	
 	public function find()
 	{
-		return $this->builder->read();
+	    return $this->builder->read();
 	}
 	
 	public function findOne()
 	{
-		return $this->builder->readRow();
+	    return $this->builder->readRow();
 	}
 	
 	public function sort($order, $desc = true)
 	{
-		$this->builder->sort($order, $desc);
-		return $this;
+	    $this->builder->sort($order, $desc);
+	    return $this;
 	}
 	
 	public function group($data)
 	{
-		$this->builder->group($data);
-		return $this;
+	    $this->builder->group($data);
+	    return $this;
 	}
 	/**
 	 * 传入：
@@ -302,13 +302,13 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	 * */
 	public function leftJoin($data, $p1 = null, $p2 = null)
 	{
-		$this->builder->leftJoin($data, $p1, $p2);
-		return $this;
+	    $this->builder->leftJoin($data, $p1, $p2);
+	    return $this;
 	}
 	
 	public function insert(array $data)
 	{
-		return $this->builder->insert($data);
+	    return $this->builder->insert($data);
 	}
 	
 	public function replace(array $data)
@@ -318,27 +318,27 @@ LEFT JOIN `user` ON `user_up`.user_id = `user`.id
 	
 	public function add(array $data)
 	{
-		return $this->builder->insert($data);
+	    return $this->builder->insert($data);
 	}
 	
 	public function insertBulk()
 	{
-		return $this->builder->insertBulk();
+	    return $this->builder->insertBulk();
 	}
 	
 	public function addBulk()
 	{
-		return $this->builder->insertBulk();
+	    return $this->builder->insertBulk();
 	}
 	
 	public function remove($id = null)
 	{
-		return $this->builder->remove($id);
+	    return $this->builder->remove($id);
 	}
 	
 	public function delete($id = null)
 	{
-		return $this->builder->remove($id);
+	    return $this->builder->remove($id);
 	}
 	
 }

@@ -25,7 +25,7 @@ class Application
         info("\e[36m=================================启动服务...=================================\e[39m");
         
         $this->checkDependencies();
-        
+
         $this->container = app();
         
         $this->container->instance('application', $this);
@@ -97,10 +97,10 @@ class Application
 //             exit;
 //         }
         
-        if (! class_exists('\Redis')) {
-            error('请先安装redis扩展, 下载地址: https://pecl.php.net/package/redis');
-            exit;
-        }
+//         if (! class_exists('\Redis')) {
+//             error('请先安装redis扩展, 下载地址: https://pecl.php.net/package/redis');
+//             exit;
+//         }
         
         if (! class_exists('\Spyc')) {
             error('请先安装spyc类库');
