@@ -69,6 +69,13 @@ if (! function_exists('swoole_worker_serv')) {
     }
 }
 
+if (! function_exists('get_worker_id')) {
+    function get_worker_id()
+    {
+        return swoole_worker_serv()->worker_id;
+    }
+}
+
 
 /**
  * 解析回调方法字符串（类 + 方法）

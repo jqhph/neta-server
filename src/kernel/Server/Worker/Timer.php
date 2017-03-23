@@ -97,15 +97,11 @@ class Timer
         if (! $timer = C('server.timer')) {
             return;
         }
-        
         foreach ($timer as $name => $v) {
             if ($workerId == 0 && $startMode == self::SAME_WORKER) {
                 $this->add($name, $v);
                 continue;
             }
-        
-            // 分散在不同进程开启定时器
-            $this->dispatchWorkerId($timer);
         
             $data = self::$table->get($name);
             if ($data['worker_id'] == $workerId) {
@@ -117,6 +113,11 @@ class Timer
     protected function dispatchWorkerId($timer)
     {
         foreach ($timer as $name => $v) {
+            // 已分配过的不允许重新分配
+            if (self::$table->get($name)) {
+                continue;
+            }
+            
             $id = $this->getWorkerId($name);
             
             self::$table->set($name, ['worker_id' => $id]);
@@ -132,7 +133,7 @@ class Timer
         }
         
         for ($i = 0; $i < $workerNum; $i ++) {
-            if ($this->isWorkerIdExist($i)) {
+            if (! $this->isWorkerIdExist($i)) {
                 return $i;
             }
         }
@@ -142,16 +143,13 @@ class Timer
     
     protected function isWorkerIdExist($id)
     {
-        $start = true;
-        foreach(self::$table as $row) {
-            if ($id == $row['worker_id']) {
-                $start = false;
+        $exist = false;
+        foreach(self::$table as $k => $row) {
+            if ($id === $row['worker_id']) {
+                $exist = true;
             }
         }
-        if ($start) {
-            return $id;
-        }
-        return false;
+        return $exist;
     }
     
     /**
@@ -247,6 +245,9 @@ class Timer
 //         self::$table->column('timer_id', Table::TYPE_INT, 4);
         self::$table->create();
         
+        // 分散在不同进程开启定时器
+        $this->dispatchWorkerId($timer);
+        
     }
     
     /**
@@ -258,7 +259,7 @@ class Timer
      */
     protected function tick($interval, $timerName, $aTime = null)
     {
-        $aTime = $aTime ?: mt_rand(0, 10000);
+        $aTime = $aTime ?: (mt_rand(0, 300) * 20);
         
         # 增加一个延迟执行的定时器
         swoole_timer_after($aTime, function () use ($interval, $timerName) {
@@ -266,8 +267,12 @@ class Timer
             self::$timeIds[$timerName] = swoole_timer_tick($interval, [$this, 'onTimer'], $timerName);
             
             $this->callAfterStart($timerName);
-            
-            logger('server')->info('定时器[' . $timerName . ']开启成功！定时器ID: ' . self::$timeIds[$timerName]);
+
+            $workerId = swoole_worker_serv()->worker_id;
+            $timerId = self::$timeIds[$timerName];
+            logger('server')->info(
+                "定时器[$timerName] 开启成功！timer_id: {$timerId} worker_id: $workerId"
+            );
         });
     }
     
