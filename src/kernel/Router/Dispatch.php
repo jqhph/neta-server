@@ -22,6 +22,8 @@ class Dispatch
 	 * */
 	protected $hooks = [];
 	
+	protected $defaultAuthClass;
+	
 	//路由解析结果
 	protected $matchResult;
 
@@ -45,6 +47,11 @@ class Dispatch
 	public function __construct(Container $container) 
 	{
 		$this->container = $container;
+	}
+	
+	public function setDefaultAuthClass($class)
+	{
+	    $this->defaultAuthClass = $class;   
 	}
 	
 	public function run(\Swoole\Http\Request $req, \Swoole\Http\Response $resp)
@@ -78,7 +85,7 @@ class Dispatch
 		
 		//注册钩子
 		foreach ((array) $this->hooks['before'] as & $hook) {
-			$events->listen('route.run.after', $hook);
+			$events->listen('route.auth.before', $hook);
 		}
 		
 
@@ -149,7 +156,7 @@ class Dispatch
 		if (! isset($auth['enable'])) {
 			$auth['enable'] = true;
 		}
-		$auth['class'] = isset($auth['class']) ? $auth['class'] : 'Auth';
+		$auth['class'] = isset($auth['class']) ? $auth['class'] : $this->defaultAuthClass;
 
 		$contr = $action = '';
 		

@@ -33,6 +33,7 @@ class TCP extends Server
     
     protected function bind()
     {
+        parent::bind();
     	$this->server->on('Connect', [$this, 'onConnect']);
     	$this->server->on('Receive', [$this, 'onReceive']);
     }
