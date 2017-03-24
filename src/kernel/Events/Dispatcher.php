@@ -69,6 +69,29 @@ class Dispatcher implements \NetaServer\Contracts\Events\Dispatcher
 		}		
 	}
 	
+// 	public function listenToOnce($events, $listener, $priority = 0)
+// 	{
+// 	    foreach ((array) $events as & $event) {
+// 	        if (strpos($event, '*') !== false) {
+// 	            $this->wildcards[$events]['once'][] = $listener;
+// 	        } else {
+// 	            $this->listeners[$event]['once'][$priority][] = $listener;
+	    
+// 	            unset($this->sorted[$event]);
+// 	        }
+// 	    }
+// 	}
+	
+	// 只触发一次
+	public function once($event, $payload = [], $halt = false)
+	{
+	    $result = $this->fire($event, $payload, $halt);
+	    
+	    $this->forget($event);
+	    
+	    return $result;
+	}
+	
 	/**
 	 * Create the class based event callable.
 	 *

@@ -14,10 +14,10 @@ class ControllerManager extends \NetaServer\Basis\Factory
 	 * */
 	public function create($name)
 	{
-		$className = '\\App\\' . __MODULE__ . '\\Contr\\' . $name;
+		$className = '\\App\\' . __MODULE__ . '\\Controller\\' . $name;
 		
 		if (! class_exists($className)) {
-			$className = '\\Custom\\' . __MODULE__ . '\\Contr\\' . $name;
+			$className = '\\Custom\\' . __MODULE__ . '\\Controller\\' . $name;
 		}
 
 		if (class_exists($className)) {
